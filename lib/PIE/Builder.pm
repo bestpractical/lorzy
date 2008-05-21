@@ -2,6 +2,9 @@
 package PIE::Builder;
 use Moose;
 
+use PIE::Lambda;
+use PIE::Expression;
+
 sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = "PIE::Expression::$name";

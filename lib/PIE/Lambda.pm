@@ -17,10 +17,8 @@ has bindings => (
 sub evaluate {
     my $self = shift;
     my $evaluator = shift;
-#    my %args = validate(@_, { context => 1});
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
-        
     }
     
 }
