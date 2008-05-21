@@ -1,4 +1,4 @@
-use Test::More qw/no_plan/;
+use Test::More tests => 11;
 
 
 use_ok('PIE::Evaluator');
@@ -7,6 +7,7 @@ use_ok('PIE::Builder');
 package Hello;
 
 use Moose;
+use MooseX::AttributeHelpers;
 
 has 'evaluator' => (
     is => 'rw',
@@ -16,9 +17,13 @@ has 'evaluator' => (
 );
 
 has 'rules' => (
+#    metaclass => 'Collection::Array',
     is => 'rw',
     isa => 'ArrayRef',
-
+#     provides  => {
+#                 push       => 'push_rules'
+#     },
+#    default   => sub { [] },
     );
 
 
@@ -29,7 +34,8 @@ sub run {
     my $name = shift;
 
     for (@{$self->rules||[]}) {
-        $self->evaluator->run($_, name => $name);
+        $self->evaluator->apply_script($_, 
+                                       PIE::Expression::String->new( value => $name ));
         last unless ($self->evaluator->result->success);
         $name =  $self->evaluator->result->value;
     }   
@@ -51,21 +57,29 @@ isa_ok($hello => 'Hello');
 $hello->evaluator->set_named('make-fred', sub { my $name = shift; return 'fred'});
 $hello->evaluator->set_named('make-bob', sub { my $name = shift; return 'bob'});
 
-my $tree = [ 'make-fred'];
+my $tree = [ [ 'make-fred'] ];
 my $builder = PIE::Builder->new();
 my $script = $builder->build_expressions($tree);
+$script->bindings([ 'name' ]);
+
 $hello->rules([ $script]);
 can_ok($hello->rules->[0], 'evaluate');
 is ($hello->run('jesse'),'Hello fred');
 
-
-
-$hello->rules([ $builder->build_expressions([qw/make-bob make-fred/]) ]);
+my $script2 = $builder->build_expressions([ ['make-bob'], ['make-fred'] ] );
+$script2->bindings([ 'name' ]);
+$hello->rules([ $script2 ]);
 can_ok($hello->rules->[0], 'evaluate');
+
 is ($hello->run('jesse'),'Hello fred');
 
-$hello->rules([ $builder->build_expressions([qw/make-bob/]),
-                $builder->build_expressions([qw/make-bob/])  ]);
+my $script3 = $builder->build_expressions([ ['make-bob'] ]);
+$script3->bindings([ 'name' ]);
+my $script4 = $builder->build_expressions([ ['make-fred'] ]);
+$script4->bindings([ 'name' ]);
+
+$hello->rules([ $script3, $script4 ]);
+
 can_ok($hello->rules->[0], 'evaluate');
 can_ok($hello->rules->[1], 'evaluate');
 is ($hello->run('jesse'),'Hello fred');

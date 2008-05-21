@@ -52,7 +52,7 @@ sub apply_script {
     }
     elsif ($lambda->isa("PIE::Lambda")) {
         my $bindings = $lambda->bindings;
-        die "unmatched number of arguments" unless $#{$bindings} == $#exp;
+        Carp::croak "unmatched number of arguments" unless $#{$bindings} == $#exp;
         # XXX: cleanup, unmask, etc
         $self->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
         $lambda->evaluate($self);
