@@ -49,6 +49,7 @@ isa_ok($hello => 'Hello');
 
 
 $hello->evaluator->set_named('make-fred', sub { my $name = shift; return 'fred'});
+$hello->evaluator->set_named('make-bob', sub { my $name = shift; return 'bob'});
 
 my $tree = [ 'make-fred'];
 my $builder = PIE::Builder->new();
@@ -56,5 +57,20 @@ my $script = $builder->build_expressions($tree);
 $hello->rules([ $script]);
 can_ok($hello->rules->[0], 'evaluate');
 is ($hello->run('jesse'),'Hello fred');
+
+
+
+$hello->rules([ $builder->build_expressions([qw/make-bob make-fred/]) ]);
+can_ok($hello->rules->[0], 'evaluate');
+is ($hello->run('jesse'),'Hello fred');
+
+$hello->rules([ $builder->build_expressions([qw/make-bob/]),
+                $builder->build_expressions([qw/make-bob/])  ]);
+can_ok($hello->rules->[0], 'evaluate');
+can_ok($hello->rules->[1], 'evaluate');
+is ($hello->run('jesse'),'Hello fred');
+
+
+
 
 1;
