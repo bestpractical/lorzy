@@ -1,4 +1,4 @@
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 
 use_ok('PIE::Evaluator');
@@ -91,6 +91,9 @@ can_ok($hello->rules->[1], 'evaluate');
 is ($hello->run('jesse'),'Hello fred');
 
 
+$hello->rules([ $hello->evaluator->get_named('make-whoever') ]);
+can_ok($hello->rules->[0], 'evaluate');
+is ($hello->run('jesse'),'Hello jesse');
 
 
 1;

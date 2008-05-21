@@ -53,8 +53,7 @@ sub apply_script {
     }
     elsif ($lambda->isa("PIE::Lambda")) {
         # XXX: cleanup, unmask, etc
-        $lambda->bind_expressions( $self, @exp );
-        $lambda->evaluate($self);
+        $lambda->evaluate($self, @exp);
     }
     else {
         die 'wtf';

@@ -22,6 +22,9 @@ sub bind_expressions {
 sub evaluate {
     my $self = shift;
     my $evaluator = shift;
+
+    $self->bind_expressions( $evaluator, @_ );
+
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
     }
