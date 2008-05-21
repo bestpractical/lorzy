@@ -53,9 +53,15 @@ is (Hello->new->run('jesse'),'Hello jesse');
 my $hello = Hello->new;
 isa_ok($hello => 'Hello');
 
-
-$hello->evaluator->set_named('make-fred', sub { my $name = shift; return 'fred'});
+use PIE::Lambda::Native;
+$hello->evaluator->set_named('make-fred',
+                             PIE::Lambda::Native->new( body => sub { return 'fred'}));
 $hello->evaluator->set_named('make-bob', sub { my $name = shift; return 'bob'});
+
+$hello->evaluator->set_named('make-whoever',
+                             PIE::Lambda::Native->new( body => sub { return $_[0] },
+                                                       bindings => ['name'] ));
+
 
 my $tree = [ [ 'make-fred'] ];
 my $builder = PIE::Builder->new();

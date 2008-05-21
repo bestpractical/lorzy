@@ -48,13 +48,12 @@ sub resolve_name {
 sub apply_script {
     my ($self, $lambda, @exp) = @_;
     if (ref($lambda) eq 'CODE') {
+        warn " deprecated";
         $lambda->(map {$self->run($_); $self->result->value } @exp);    
     }
     elsif ($lambda->isa("PIE::Lambda")) {
-        my $bindings = $lambda->bindings;
-        Carp::croak "unmatched number of arguments" unless $#{$bindings} == $#exp;
         # XXX: cleanup, unmask, etc
-        $self->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
+        $lambda->bind_expressions( $self, @exp );
         $lambda->evaluate($self);
     }
     else {

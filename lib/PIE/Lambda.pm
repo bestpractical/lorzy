@@ -12,7 +12,12 @@ has bindings => (
     is => 'rw',
     isa => 'ArrayRef[Str]');
 
-
+sub bind_expressions {
+    my ($self, $ev, @exp) = @_;
+    my $bindings = $self->bindings;
+    Carp::croak "unmatched number of arguments" unless $#{$bindings} == $#exp;
+    $ev->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
+}
 
 sub evaluate {
     my $self = shift;
@@ -20,7 +25,6 @@ sub evaluate {
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
     }
-    
 }
 
 1;
