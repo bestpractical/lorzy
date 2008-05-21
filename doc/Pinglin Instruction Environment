@@ -1,0 +1,461 @@
+
+=begin trivial problem statement 
+
+# It's as easy as PIE
+- (progn list)
+- (let ((x ...) ( y ...)) (exp....))
+- (if (cond...) on_true on_false)
+- (match a b)
+- defun
+
+sub foo(Str $var) {
+    if ($var ~~ /software/) {
+        return 'hate';
+    }
+    else {
+        return 'love';
+    }
+}
+
+(defun foo (var)
+   (if (regexp-match (ticket-title! var) "/software")
+    "hate"
+    "love"
+    ))
+    
+- defun
+    name: foo
+    args:
+       - var
+    expression:
+      if:
+        cond:
+           regexp-match:
+               - args:
+                  - var
+                  - 'software'
+        on_true: "hate"
+        on_false: "love"
+
+=cut
+
+# naive implementation
+
+
+
+package PIE::Evaluatable;
+use Moose::Role;
+
+requires 'evaluate';
+
+package PIE::Lambda;
+use Moose; use MooseX::Params::Validate;
+with 'PIE::Evaluatable';
+
+has nodes => (
+    is => 'rw',
+    isa => 'ArrayRef',
+);
+
+has bindings => (
+    is => 'rw',
+    isa => 'ArrayRef[Str]');
+
+
+
+sub evaluate {
+    my $self = shift;
+    my $evaluator = shift;
+#    my %args = validate(@_, { context => 1});
+    foreach my $node (@{$self->nodes}) {
+        $evaluator->run($node);
+        
+    }
+    
+}
+
+
+package PIE::Expression;
+use Moose;
+
+with 'PIE::Evaluatable';    
+
+has elements => (
+   is => 'ro',
+   isa => 'ArrayRef');
+
+# (foo bar (orz 1 ))
+# === (eval 'foo bar (orz 1))
+# === (apply foo ((bar (orz 1))
+
+
+
+sub evaluate {
+    my ($self, $ev) = @_;
+    my $func = $self->elements->[0];
+    my @exp = @{ $self->elements }[1..$#{ $self->elements }];
+    my $lambda = $ev->resolve_name($func);
+    return $ev->apply_script($lambda, @exp);
+}
+
+package PIE::Expression::True;
+use Moose;
+
+extends 'PIE::Expression';
+
+sub evaluate {1}
+
+package PIE::Expression::False;
+use Moose;
+extends 'PIE::Expression::True';
+
+sub evaluate {
+    my $self = shift;
+    return ! $self->SUPER::evaluate();
+
+}
+
+package PIE::Expression::Loop;
+use Moose;
+extends 'PIE::Expression';
+
+has items => ( is => 'rw', isa => 'ArrayRef[PIE::Evaluatable]');
+has block => ( is => 'rw', isa => 'PIE::Evaluatable');
+
+sub evaluate {
+    my $self = shift;
+
+}
+
+
+
+
+
+package PIE::Expression::IfThen;
+use Moose;
+extends 'PIE::Expression';
+
+
+has condition => (
+    is => 'rw',
+    does => 'PIE::Evaluatable');
+    
+has if_true => (
+    is => 'rw',
+    does => 'PIE::Evaluatable');
+    
+has if_false => (
+    is => 'rw',
+    does => 'PIE::Evaluatable');
+    
+
+sub arguments { return qw(condition if_true if_false)} 
+    
+
+sub evaluate {
+    my $self = shift;
+    my $evaluator = shift;
+    $evaluator->run($self->condition);
+    
+
+    if ($evaluator->result->value) {
+        
+        $evaluator->run($self->if_true);
+        return $evaluator->result->value;
+        }    else { 
+        $evaluator->run($self->if_false);
+        return $evaluator->result->value;
+    }
+}
+
+
+package PIE::Expression::String;
+use Moose;
+extends 'PIE::Expression';
+
+has value => (
+    is => 'rw',
+    isa => 'Str | Undef');
+    
+    
+sub evaluate {
+    my $self = shift;
+    return $self->value;
+
+}
+
+package PIE::Expression::Symbol;
+use Moose;
+extends 'PIE::Expression';
+
+has symbol => (
+    is => 'rw',
+    isa => 'Str');
+    
+    
+sub evaluate {
+    my ($self, $ev) = @_;
+    my $result = $ev->get_named($self->symbol);
+    warn $self->symbol;
+    warn $result;
+    return $result->isa('PIE::Expression') ? $ev->run($result) : $result; # XXX: figure out evaluation order here
+}
+
+package PIE::Evaluator;
+use Moose;
+use MooseX::AttributeHelpers;
+         
+has result => ( 
+    is => 'ro',
+    isa => 'PIE::EvaluatorResult',
+    default => sub { return PIE::EvaluatorResult->new()}
+    );
+    
+has named => (
+             metaclass => 'Collection::Hash',
+             is        => 'rw',
+             default   => sub { {} },
+             isa => 'HashRef',
+             provides  => {
+                 get       => 'get_named',
+                 set       => 'set_named',
+             });
+
+sub run {
+    my $self = shift;
+    my $expression = shift;
+    eval { 
+    my $ret = $expression->evaluate($self);
+    $self->result->value($ret) ; # XXX TODO - we should be separating out success and value
+    $self->result->success(1);
+    };
+    if (my $err = $@) {
+        die $err; # for now
+    
+        $self->result->success(0);
+        $self->result->error($err);
+    }
+
+    return 1;
+}
+
+sub resolve_name {
+    my ($self, $name) = @_;
+    $self->get_named($name);
+}
+
+
+sub apply_script {
+    my ($self, $lambda, @exp) = @_;
+    if (ref($lambda) eq 'CODE') {
+        $lambda->(map {$self->run($_); $self->result->value } @exp);    
+    }
+    elsif ($lambda->isa("PIE::Lambda")) {
+        my $bindings = $lambda->bindings;
+        die "unmatched number of arguments" unless $#{$bindings} == $#exp;
+        # XXX: cleanup, unmask, etc
+        $self->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
+        $lambda->evaluate($self);
+    }
+    else {
+        die 'wtf';
+    }
+}
+
+
+package PIE::EvaluatorResult;
+use Moose;
+
+has success => (
+    is => 'rw',
+    isa => 'Bool'
+);
+
+has error => ( 
+    is => 'rw',
+    
+
+);
+
+has value => ( 
+    is => 'rw',
+    isa => 'Str | Undef',
+    required => 0
+    );
+
+
+package PIE::Builder;
+use Moose;
+
+sub build_op_expression {
+    my ($self, $name, $args) = @_;
+    my $class = "PIE::Expression::$name";
+    die unless $class->meta->does_role("PIE::Evaluatable");
+    
+    $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
+}
+
+sub build_expression {
+    my ($self, $tree) = @_;
+    if (!ref($tree)) {
+        return PIE::Expression::String->new(value => $tree );
+    }
+    elsif (ref($tree) eq 'ARRAY') {
+        my ($func, @rest) = @$tree;
+        return PIE::Expression->new( elements => [$func, map { $self->build_expression($_) } @rest]);
+    }
+    elsif (ref($tree) eq 'HASH') {
+        return $self->build_op_expression($tree->{name}, $tree->{args});
+    }
+}
+
+
+sub build_expressions {
+    my $self = shift;
+    my $ops = shift;
+
+    return PIE::Lambda->new( nodes => [map { $self->build_expression($_) } @$ops ] );
+}
+
+package main;
+use Test::More qw'no_plan';
+
+my $trivial = PIE::Expression::True->new;
+
+my $evaluator = PIE::Evaluator->new;
+ok ($evaluator->run($trivial));
+ok($evaluator->result->success);
+ok($evaluator->result->value);
+
+
+my $false = PIE::Expression::False->new();
+my $eval2 = PIE::Evaluator->new;
+ok($eval2->run($false));
+ok(!$eval2->result->value);
+ok($eval2->result->success);
+
+
+my $if_true = PIE::Expression::IfThen->new( condition => PIE::Expression::True->new(),                                           if_true => PIE::Expression::True->new(),if_false => PIE::Expression::False->new());
+                                            
+my $eval3 = PIE::Evaluator->new();
+ok($eval3->run($if_true));
+ok($eval3->result->value);
+ok($eval2->result->success);
+
+my $if_false = PIE::Expression::IfThen->new( condition => PIE::Expression::False->new(),                                           if_true => PIE::Expression::True->new(),if_false => PIE::Expression::False->new());
+                                            
+my $eval4 = PIE::Evaluator->new();
+ok($eval4->run($if_false));
+ok(!$eval4->result->value);
+ok($eval4->result->success);
+
+my $eval5 = PIE::Evaluator->new;
+$eval5->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
+                                    return $arg =~ m/$regexp/; });
+                                    
+
+my $match_p = PIE::Expression->new(elements => ['match-regexp',
+                                                PIE::Expression::String->new( value => 'I do love software'), 
+                                                PIE::Expression::String->new( value =>'software')]);
+
+$eval5->run($match_p);
+ok ($eval5->result->success);
+
+is($eval5->result->value, 1);
+
+
+
+my $eval6 = PIE::Evaluator->new();
+
+$eval6->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
+                                    return $arg =~ m/$regexp/; });
+                                    
+
+
+
+my $match_fail_p = PIE::Expression->new(elements => ['match-regexp',
+                                                PIE::Expression::String->new( value => 'I do love hardware'), 
+                                                PIE::Expression::String->new( value =>'software')]);
+
+$eval6->run($match_fail_p);
+ok ($eval6->result->success);
+
+ok(!$eval6->result->value);
+
+
+my $script = PIE::Lambda->new(nodes => [ 
+        PIE::Expression::True->new()
+
+],
+
+);
+
+my $eval7 = PIE::Evaluator->new();
+$eval7->apply_script($script);
+ok($eval7->result->success);
+ok($eval7->result->value);
+
+
+
+my $script2 = PIE::Lambda->new(
+    nodes => [
+                $if_true ]);
+
+my $eval8 = PIE::Evaluator->new();
+$eval8->apply_script($script2);
+ok($eval8->result->success);
+ok($eval8->result->value);
+
+my $eval9 = PIE::Evaluator->new();
+
+$eval9->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
+                                    return $arg =~ m/$regexp/; });
+
+
+
+my $match_script = PIE::Lambda->new(
+
+    nodes => [ 
+     PIE::Expression->new(elements => ['match-regexp',
+                                                PIE::Expression::Symbol->new( symbol => 'tested-string') ,
+                                                PIE::Expression::Symbol->new( symbol => 'regex'),                                             
+        ]) ],
+    bindings => [ 'tested-string', 'regex' ],
+);
+
+
+$eval9->apply_script($match_script,                                                 PIE::Expression::String->new( value => 'I do love hardware'), 
+                                                PIE::Expression::String->new( value =>'software') );
+
+ok ($eval9->result->success);
+
+is($eval9->result->value, 1);
+my $tree = 
+[
+          {
+            name => 'IfThen',
+            args => {
+                          'if_true' => 'hate',
+                          'if_false' => 'love',
+                          'condition' => [ 'regexp-match', 'software', 'foo' ],
+                        }
+          }
+        ];
+
+
+my $builder = PIE::Builder->new();
+#use YAML;
+my $script = $builder->build_expressions($tree);
+
+my $eval10 = PIE::Evaluator->new();
+
+$eval10->set_named( 'regexp-match' => sub { my ($arg, $regexp) = @_;
+                                    return $arg =~ m/$regexp/; });
+
+
+warn Dumper($script); use Data::Dumper;
+$eval10->apply_script($script);
+ok($eval10->result->success);
+is($eval10->result->value,'love');
+
+

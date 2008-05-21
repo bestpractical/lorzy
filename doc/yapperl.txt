@@ -1,0 +1,319 @@
+Yatta! The Pinglin Control Framework
+
+PCF is designed as an scripting language for multiuser software.
+
+
+Basically, I don't want to let users write arbitrary programs.
+
+
+RT implementation plan:
+    
+
+
+
+Uses in RT:
+    Replace scrips:
+            - on transaction, if some condition, perform some action
+    validate value for field foo 
+    canonicalize value for field foo
+    get possible values for field foo
+    check user Alice's permission to update ticket foo
+    check user Alice's permission to show ticket 123's field 'abc'
+    before the user updates some ticket, run some action, possibly modifying the data, possibly rejecting the update
+    
+    
+Hooks in Jifty:
+
+    canonicalize field $FOO on action $TYPE
+    validate field  $FOO on action $TYPE
+    before action of type $TYPE
+    after action of type $TYPE
+    "run manually"
+    "run at time"
+    
+    ex: When I create a new task which matches "Bug: foo" add tasks: "Branch $projname" "Fix bug", "Hand off to QA"
+    When I check off a task "Fix bug", add a comment to the dependent task matching "QA" saying "your turn"
+    
+    ex: 'every monday,'
+        find every task I updated last week
+        copy the notes added last week to a variable unless the notes match "jobhunt"
+        
+        email my boss
+        
+    
+
+
+I want to give them snap-together lego bricks
+
+
+
+
+
+
+a framework for defining lego-like blocks
+an environment for building snap-together sets of blocks and naming them.
+an environment for executing the snap-togethers
+an easy way to embed calls to snap-togethers in my code (RT or Prophet or catalyst or whatevertyehfuckyou want. but not kitteh. definitely not kitteh)
+
+
+Just to name things:
+
+
+    a brick is an individual bit of code. it takes inputs.
+        does it return results or does it shove results in some input handed to it?
+        
+
+    a block is essentially a named bricks built up of one or more blocks or bricks
+    
+    
+
+o Code
+  - How blocks are built and execcuted
+  - How to specify a brick's arguments/return values (as strongly typed as we can) 
+        (Blocks arguments are always the topmost brick's arguments. Their return values are always the bottom-most brick's returnvalues.)
+  - How to link blocks together (making sure that a block's arguments match up with what the caller provides)
+  - How to coerce block arguments (or is this just an "int to str" brick, etc? that feels nice and clean)
+        - implicit coercion when it makes sense is a win.
+  - How to specify exceptions
+  - How to limit resource usage (infinite loops)
+o Interaction with system plugged to
+  - how existing models / methods are exported and used in YAPERL
+  - I think this is just done as a set of custom bricks provided by the existing system
+o How to find and invoke blocks (with arguments) from your existing system (and how to read the return values if any)
+
+
+
+
+
+
+
+
+each Thing has 
+    one Thing Definition
+    one uuid
+    one name
+    many Properties
+
+each Property has
+    one PropertyDefinition
+    one or more values
+
+
+each ThingDefinition has 
+    many PropertyDefinitions
+    one uuid
+    one name
+
+each PropertyDefinition has
+    one name
+    one uuid
+    one data_type
+ rule_hooks:
+    valid_values();
+    validate_value();
+    canoncalize_value();
+    before_set_value();
+    after_set_value();
+    before_load_value();
+    after_load_value();
+
+
+
+ rule_hooks:
+    before_create()
+    after_create();
+    before_load();
+    after_load();
+    before_delete();
+    after_delete();
+    before_set();
+    after_set();
+    before_read();
+    after_read();
+    
+    # TODO: do we want special handlers for unknown properties?
+
+
+each Rule can return:
+    mutate_calling_args
+    abort with failure
+    abort with success
+    pass
+
+
+
+A given hook point defines:
+
+    a name
+    an object type
+
+
+A given rule implementation class defines:
+
+    a list of rule arguments it takes
+    a list of possible "subrules" hook points it provides
+
+
+A given RuleInstance has:
+
+    object_type:
+        enum of (TypeDefinition, AttributeDefinition)
+    object uuid
+    hook_name
+
+
+    virtual column
+        arguments
+
+    each rule:
+        * applies to a single object
+            either a TypeDefinition or an AttributeDefinition
+        * applies to a single trigger point.
+
+
+
+
+sub foo(Str $var) {
+    if ($var ~~ /software/) {
+        return 'hate';
+    }
+    else {
+        return 'love';
+    }
+}
+
+- cond
+  - expr: 
+    - match
+      - $var
+      - software
+  - true: (block)
+    - return('hate')
+  - false: (block)
+    - return('love')
+
+
+#So, what's the case you're seeing being ambiguous?
+
+
+if(a) {FOO} else { BAR }
+X(a, FOO, BAR)
+
+And these are different because FOO and BAR are evaluated eagerly in the X(a,FOO,BAR) case?
+But if functions' arguments are evaluated lazily, it doesn't hurt.
+
+
+
+package PCF::Brick::Conditional::IfThenElse;
+use Moose;
+
+has condition => (
+    is 'ro',
+    isa 'PCF::Block'
+);
+
+has on_true => (
+    is 'ro',
+    isa 'PCF::Block');
+    
+
+has on_false => ( 
+    is 'ro',
+    isa 'PCF::Block');
+
+sub exec {
+    my $self = shift;
+    my $result = $self->condition->exec;
+    if ($result->return_value) {
+        $self->on_true->exec;
+    } else {
+        $self->on_false->exec;
+    }
+}
+
+package PCF::Brick::Match::Regexp;
+use Moose;
+
+has regexp => (
+    is 'ro',
+    isa 'Regex');
+    
+    
+has argument => (
+    is 'ro',
+    isa 'PCF::Block' # in case of a raw string, it would be a PCF::Block::Constant
+);
+
+package PCF::Brick::Return;
+use Moose;
+
+has argument => (
+    is 'ro',
+    isa 'PCF::Block' # in case of a raw string, it would be a PCF::Block::Constant
+);
+
+
+sub exec {
+    my $self = shift;
+    
+    my $result = $self->argument->exec;
+    PCF::Runtime::MagicallySignalRuntimeWeAreDone($result->return_value); #? sane?
+
+}
+
+
+package PCF::ExecResult;
+use Moose;
+
+has return_values => (
+	metaclass => "Collection::Array",
+	isa => "ArrayRef[PCF::Runtime::Scalar]",
+    is 'rw',
+	provides => {
+   		push => "push",
+		pop  => "pop",
+    },
+);
+
+has failed => (
+    is 'ro',
+    is 'Bool'
+    );
+
+
+package PCF::Block;
+use Moose;
+
+has name => (
+    is 'rw',
+    isa 'Str');
+
+    
+package PCF::Runtime;
+
+sub load_block {}
+sub exec {}
+
+
+
+
+# a class to describe an op tree
+# a class to run an optree
+# primitives for basic ops
+    # run a named optree like it's a primitive
+    
+# primitives for variables
+# a way to store an optree as a variable
+# a way to "access" the result of the optree
+
+
+
+
+# I'm not super-convinced by the p5 op definitions. but it might just be that I've been trained that XXXOP == dealing with broken p5 core
+# Is the goal here to basically define bricks by "what arguments they take and what arguments they return"?
+
+
+return = UNOP
+cond = LISTOP
+match = BINOP
+$var(PADSV) = SVOP?
