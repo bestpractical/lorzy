@@ -9,17 +9,17 @@ has body => (
 );
 
 sub bind_expressions {
-    my ($self, $ev, @exp) = @_;
+    my ($self, $evaluator, @exp) = @_;
     return;
 }
 
-sub evaluate {
+sub evaluatoraluate {
     my $self = shift;
-    my $ev = shift;
+    my $evaluator = shift;
     my $bindings = $self->bindings;
     Carp::croak "unmatched number of arguments" unless $#{$bindings} == $#_;
 
-    $self->body->(map {$ev->run($_); $ev->result->value } @_);
+    $self->body->(map {$evaluator->run($_); $ev->result->value } @_);
 }
 
 1;
