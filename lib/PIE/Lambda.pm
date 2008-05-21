@@ -12,6 +12,10 @@ has bindings => (
     is => 'rw',
     isa => 'ArrayRef[Str]');
 
+has arguments => (
+    is => 'rw',
+    isa => 'HashRef[PIE::Function::Argument]');
+
 sub bind_expressions {
     my ($self, $ev, @exp) = @_;
     my $bindings = $self->bindings;
