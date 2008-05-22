@@ -8,6 +8,10 @@ has name => (
    is => 'ro',
    isa => 'Str');
 
+has elements => (
+   is => 'ro',
+   isa => 'ArrayRef');
+
 has args => (
     is => 'rw',
     default => sub { {} },
@@ -22,6 +26,20 @@ has args => (
 
 
 sub evaluate {
+    my ($self, $ev) = @_;
+    
+    if ($self->elements) {
+        # deprecated
+        my $func = $self->elements->[0];
+        my @exp = @{ $self->elements }[1..$#{ $self->elements }];
+        my $lambda = $ev->resolve_name($func);
+        return $ev->apply_script($lambda, @exp);
+    }
+
+    my $lambda = $ev->resolve_name($self->name);
+    return $ev->apply_script_named_args( $lambda, $self->args );
+
+    
 }
 
 
