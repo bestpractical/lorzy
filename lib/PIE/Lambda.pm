@@ -77,7 +77,7 @@ sub evaluate_named_args {
     
     my ($missing, $unwanted)  = $self->check_named_args($args);
     
-    die if (keys %$missing || keys %$unwanted);
+    return undef if (keys %$missing || keys %$unwanted);
     
     my $arguments = $self->args;
     for (sort keys %$arguments) {
