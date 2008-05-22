@@ -4,13 +4,18 @@ use Moose;
 
 use PIE::Lambda;
 use PIE::Expression;
+use UNIVERSAL::require;
 
 sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = "PIE::Expression::$name";
-    die unless $class->meta->does_role("PIE::Evaluatable");
-    
-    $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
+    if ($class->require) {
+        die unless $class->meta->does_role("PIE::Evaluatable");
+        $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
+    }
+    else {
+        PIE::Expression->new( name => $name, args => $args );
+    }
 }
 
 sub build_expression {

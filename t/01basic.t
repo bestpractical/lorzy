@@ -39,46 +39,6 @@ ok($eval4->result->success);
 
 
 
-my $MATCH_REGEX =     PIE::Lambda::Native->new( body =>  sub { my ($arg, $regexp) = @_;
-                                    return $arg =~ m/$regexp/; },
-                            
-                            bindings => [ 'tested-string', 'regex' ],
-                            
-                            );
-
-
-
-my $eval5 = PIE::Evaluator->new;
-$eval5->set_named( 'match-regexp' => $MATCH_REGEX);
-    
-                                    
-
-my $match_p = PIE::Expression->new(elements => ['match-regexp',
-                                                PIE::Expression::String->new( value => 'I do love software'), 
-                                                PIE::Expression::String->new( value =>'software')]);
-
-$eval5->run($match_p);
-ok ($eval5->result->success);
-
-is($eval5->result->value, 1);
-
-
-
-my $eval6 = PIE::Evaluator->new();
-
-$eval6->set_named( 'match-regexp' => $MATCH_REGEX);
-
-
-
-my $match_fail_p = PIE::Expression->new(elements => ['match-regexp',
-                                                PIE::Expression::String->new( value => 'I do love hardware'), 
-                                                PIE::Expression::String->new( value =>'software')]);
-
-$eval6->run($match_fail_p);
-ok ($eval6->result->success);
-
-ok(!$eval6->result->value);
-
 
 my $script = PIE::Lambda->new(nodes => [ 
         PIE::Expression::True->new()

@@ -4,9 +4,20 @@ use Moose;
 
 with 'PIE::Evaluatable';    
 
+has name => (
+   is => 'ro',
+   isa => 'Str');
+
 has elements => (
    is => 'ro',
    isa => 'ArrayRef');
+
+has args => (
+    is => 'rw',
+    default => sub { {} },
+    isa => 'HashRef[PIE::Expression]');
+
+#Attribute (args) does not pass the type constraint because: Validation failed for 'HashRef[PIE::FunctionArgument]' failed with value HASH(0x9a979c) at /opt/local/lib/perl5/site_perl/5.8.8/Moose/Meta/Attribute.pm line 340
 
 # (foo bar (orz 1 ))
 # === (eval 'foo bar (orz 1))
@@ -16,10 +27,19 @@ has elements => (
 
 sub evaluate {
     my ($self, $ev) = @_;
-    my $func = $self->elements->[0];
-    my @exp = @{ $self->elements }[1..$#{ $self->elements }];
-    my $lambda = $ev->resolve_name($func);
-    return $ev->apply_script($lambda, @exp);
+    
+    if ($self->elements) {
+        # deprecated
+        my $func = $self->elements->[0];
+        my @exp = @{ $self->elements }[1..$#{ $self->elements }];
+        my $lambda = $ev->resolve_name($func);
+        return $ev->apply_script($lambda, @exp);
+    }
+
+    my $lambda = $ev->resolve_name($self->name);
+    return $ev->apply_script_named_args( $lambda, $self->args );
+
+    
 }
 
 

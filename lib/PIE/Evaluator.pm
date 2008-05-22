@@ -30,7 +30,7 @@ sub run {
     $self->result->success(1);
     };
     if (my $err = $@) {
-        die $err; # for now
+#        die $err; # for now
     
         $self->result->success(0);
         $self->result->error($err);
@@ -52,5 +52,10 @@ sub apply_script {
         $lambda->evaluate($self, @exp);
 }
 
+sub apply_script_named_args {
+    # self, a lambda, any number of positional params. (to be replaced with a params object?)
+    my ($self, $lambda, $args) = validate_pos(@_, { isa => 'PIE::Evaluator'}, { ISA => 'PIE::Lambda'}, { ISA => "HASHREF" } ) ;
+    $lambda->evaluate_named_args($self, $args);
+}
 
 1;
