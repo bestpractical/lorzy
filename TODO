@@ -1,0 +1,68 @@
+Backend
+
+# is there a reason we shouldn't force _all_ arguments to _all_ functions to be named? 
+
+- define named functions with typed arguments
+  - builtins
+    - control op: named subexpression?
+    - 
+
+
+{ op => 'String',
+  args => { value => 'moose' } }
+
+{ op => 'Symbol',
+  args => { value => 'defined-symbol' } }
+  
+{ op => 'orz',
+  args => { named1 => EXP2,
+            orz2   => EXP3 } }
+
+
+{ op => 'Increment',
+    args => { operand => { 'op' => 'symbol', args => { value => 'hate' } },
+
+{ op => 'Add',
+    args => { left => EXP,
+              right => EXP  },
+}
+
+
+Lambda:
+
+bindings => Hashref of name => { type => 'foo', description => 'blah' };
+
+coerce 'PIE::FunctionArgument'
+  => form 'HashRef' via => { PIE::FunctionArgument->new( %$_  };
+
+my $l = PIE::Lambda->new(   arguments => [
+        PIE::FunctionArgument->new( name => 'username', type => 'String'),
+        PIE::FunctionArgument->new( name => 'ticket', type => '??')
+
+
+    ],
+    expression => [
+        # give the ticket to the user or return fail if the user has no permission to own
+    
+    ]
+
+1. lookup op, if it's PIE::Expression::$opname, use it
+2. otherwise it's a userfunc
+
+
+GUI Builder
+
+- load a serialized tree of expressions into objects
+- define a set of arguments a tree of expressions expects"
+- introspect an expression to get its name,description and arguments (incl types)
+- get a list of all "known" expressions and their arguments(incl types)
+- display a tree of expression objects
+- let user add an expression as an argument to an existing expression
+- let user add expression to run sequentially "after" another expression
+- serialize and save the tree of expressions 
+- save a tree of expressions as a named thingy which can be referenced from other expressions.
+
+Hooks
+
+- allow a hook to define its name and what variables it can pass in to an expression, along with what return type it expects and some textual descriptions of these items.
+    (Create a PIE::Hook class?)

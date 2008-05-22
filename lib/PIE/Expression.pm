@@ -116,8 +116,6 @@ has symbol => (
 sub evaluate {
     my ($self, $ev) = @_;
     my $result = $ev->get_named($self->symbol);
-    warn $self->symbol;
-    warn $result;
     return $result->isa('PIE::Expression') ? $ev->run($result) : $result; # XXX: figure out evaluation order here
 }
 

@@ -56,7 +56,7 @@ isa_ok($hello => 'Hello');
 use PIE::Lambda::Native;
 $hello->evaluator->set_named('make-fred',
                              PIE::Lambda::Native->new( body => sub { return 'fred'}));
-$hello->evaluator->set_named('make-bob', sub { my $name = shift; return 'bob'});
+$hello->evaluator->set_named('make-bob', PIE::Lambda::Native->new( body => sub { my $name = shift; return 'bob'}));
 
 $hello->evaluator->set_named('make-whoever',
                              PIE::Lambda::Native->new( body => sub { return $_[0] },

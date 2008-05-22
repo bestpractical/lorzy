@@ -3,7 +3,7 @@ package PIE::Evaluator;
 use Moose;
 use MooseX::AttributeHelpers;
 use PIE::EvaluatorResult;
-
+use Params::Validate;
 
 has result => ( 
     is => 'ro',
@@ -46,18 +46,10 @@ sub resolve_name {
 
 
 sub apply_script {
-    my ($self, $lambda, @exp) = @_;
-    if (ref($lambda) eq 'CODE') {
-        warn " deprecated";
-        $lambda->(map {$self->run($_); $self->result->value } @exp);    
-    }
-    elsif ($lambda->isa("PIE::Lambda")) {
+    # self, a lambda, any number of positional params. (to be replaced with a params object?)
+    my ($self, $lambda, @exp) = validate_pos(@_, { isa => 'PIE::Evaluator'}, { ISA => 'PIE::Lambda'}, (0) x (@_ - 2)  ) ;
         # XXX: cleanup, unmask, etc
         $lambda->evaluate($self, @exp);
-    }
-    else {
-        die 'wtf';
-    }
 }
 
 

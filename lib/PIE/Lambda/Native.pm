@@ -13,13 +13,11 @@ sub bind_expressions {
     return;
 }
 
-sub evaluatoraluate {
+sub evaluate {
     my $self = shift;
     my $evaluator = shift;
-    my $bindings = $self->bindings;
-    Carp::croak "unmatched number of arguments" unless $#{$bindings} == $#_;
-
-    $self->body->(map {$evaluator->run($_); $ev->result->value } @_);
+    $self->check_bindings(\@_);
+    $self->body->(map {$evaluator->run($_); $evaluator->result->value } @_);
 }
 
 1;

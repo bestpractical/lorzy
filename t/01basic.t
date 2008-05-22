@@ -3,6 +3,7 @@ use Test::More qw'no_plan';
 use_ok('PIE::Expression');
 use_ok('PIE::Evaluator');
 use_ok('PIE::Lambda');
+use_ok('PIE::Lambda::Native');
 use_ok('PIE::Builder');
 
 my $trivial = PIE::Expression::True->new;
@@ -34,9 +35,22 @@ ok($eval4->run($if_false));
 ok(!$eval4->result->value);
 ok($eval4->result->success);
 
+
+
+
+
+my $MATCH_REGEX =     PIE::Lambda::Native->new( body =>  sub { my ($arg, $regexp) = @_;
+                                    return $arg =~ m/$regexp/; },
+                            
+                            bindings => [ 'tested-string', 'regex' ],
+                            
+                            );
+
+
+
 my $eval5 = PIE::Evaluator->new;
-$eval5->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
-                                    return $arg =~ m/$regexp/; });
+$eval5->set_named( 'match-regexp' => $MATCH_REGEX);
+    
                                     
 
 my $match_p = PIE::Expression->new(elements => ['match-regexp',
@@ -52,9 +66,7 @@ is($eval5->result->value, 1);
 
 my $eval6 = PIE::Evaluator->new();
 
-$eval6->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
-                                    return $arg =~ m/$regexp/; });
-                                    
+$eval6->set_named( 'match-regexp' => $MATCH_REGEX);
 
 
 
@@ -93,18 +105,21 @@ ok($eval8->result->value);
 
 my $eval9 = PIE::Evaluator->new();
 
-$eval9->set_named( 'match-regexp' => sub { my ($arg, $regexp) = @_;
-                                    return $arg =~ m/$regexp/; });
+$eval9->set_named( 'match-regexp' => $MATCH_REGEX);
 
 
 
 my $match_script = PIE::Lambda->new(
 
-    nodes => [ 
-     PIE::Expression->new(elements => ['match-regexp',
-                                                PIE::Expression::Symbol->new( symbol => 'tested-string') ,
-                                                PIE::Expression::Symbol->new( symbol => 'regex'),                                             
-        ]) ],
+    nodes => [
+        PIE::Expression->new(
+            elements => [
+                'match-regexp',
+                PIE::Expression::Symbol->new( symbol => 'tested-string' ),
+                PIE::Expression::Symbol->new( symbol => 'regex' ),
+            ]
+        )
+    ],
     bindings => [ 'tested-string', 'regex' ],
 );
 
@@ -122,7 +137,7 @@ my $tree =
             args => {
                           'if_true' => 'hate',
                           'if_false' => 'love',
-                          'condition' => [ 'regexp-match', 'software', 'foo' ],
+                          'condition' => [ 'match-regexp', 'software', 'foo' ],
                         }
           }
         ];
@@ -130,16 +145,13 @@ my $tree =
 
 my $builder = PIE::Builder->new();
 #use YAML;
-my $script = $builder->build_expressions($tree);
 
 my $eval10 = PIE::Evaluator->new();
 
-$eval10->set_named( 'regexp-match' => sub { my ($arg, $regexp) = @_;
-                                    return $arg =~ m/$regexp/; });
+$eval10->set_named( 'match-regexp' => $MATCH_REGEX);
 
 
-warn Dumper($script); use Data::Dumper;
-$eval10->apply_script($script);
+$eval10->apply_script( $builder->build_expressions($tree) );
 ok($eval10->result->success);
 is($eval10->result->value,'love');
 
