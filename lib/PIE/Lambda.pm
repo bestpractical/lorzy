@@ -47,10 +47,12 @@ sub check {
 
 sub evaluate {
     my ($self, $evaluator, $args) = @_;
-    
     my ($missing, $unwanted)  = $self->check($args);
     
-    return undef if (keys %$missing || keys %$unwanted);
+    if (keys %$missing || keys %$unwanted) {
+            warn "Bad args! XXX TODO BETTER DIAGNOSTICS";
+        return undef;
+    }
     
     my $arguments = $self->signature;
     for (sort keys %$arguments) {

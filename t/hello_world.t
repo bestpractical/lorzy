@@ -32,9 +32,10 @@ sub run {
     my $self = shift;
     my $name = shift;
 
+     my $args = { name => PIE::Expression::String->new( args => { value => $name } ) };
     for ( @{ $self->rules || [] } ) {
-        $self->evaluator->apply_script( $_,
-            { name => PIE::Expression::String->new( value => $name ) } );
+        $self->evaluator->apply_script( $_, $args);
+
         last unless ( $self->evaluator->result->success );
         $name = $self->evaluator->result->value;
     }
@@ -79,7 +80,7 @@ can_ok( $hello->rules->[0], 'evaluate' );
 is( $hello->run('jesse'), 'Hello fred' );
 
 my $script2 = $builder->defun(
-    ops =>[ { name => 'make-bob' }, { name => 'make-fred' } ] ,
+    ops => [ { name => 'make-bob' }, { name => 'make-fred' } ],
     signature =>
         { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
@@ -88,11 +89,16 @@ can_ok( $hello->rules->[0], 'evaluate' );
 
 is( $hello->run('jesse'), 'Hello fred' );
 
-my $script3 = $builder->defun( ops => [ { name => 'make-bob' } ], signature =>
-    { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) } );
-my $script4 = $builder->defun ( ops => [ { name => 'make-fred' } ],
-signature =>
-    { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) } );
+my $script3 = $builder->defun(
+    ops => [ { name => 'make-bob' } ],
+    signature =>
+        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+);
+my $script4 = $builder->defun(
+    ops => [ { name => 'make-fred' } ],
+    signature =>
+        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+);
 
 $hello->rules( [ $script3, $script4 ] );
 

@@ -117,13 +117,28 @@ extends 'PIE::Expression';
 use Params::Validate qw/validate_pos/;
 
 has signature => (
-    is => 'ro',
-    default => sub { { value => PIE::FunctionArgument->new( name => 'value', type => 'Str')}});
-    
-    
+    is      => 'ro',
+    default => sub {
+        { value => PIE::FunctionArgument->new( name => 'value', type => 'Str' )
+        };
+    }
+);
+
+has args => (
+    is => 'rw',
+    default => sub { {} },
+    isa => 'HashRef[Str]');
+
+
 sub evaluate {
-    my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
-    return $self->args->{value};
+    my ( $self, $eval ) = validate_pos(
+        @_,
+        { isa => 'PIE::Expression' },
+        { isa => 'PIE::Evaluator' }
+    );
+
+
+    return $self->args->{'value'};
 
 }
 
@@ -144,3 +159,4 @@ sub evaluate {
 }
 
 1;
+

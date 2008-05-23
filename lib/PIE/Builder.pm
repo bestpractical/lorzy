@@ -23,7 +23,7 @@ sub build_op_expression {
 sub build_expression {
     my ($self, $tree) = @_;
     if (!ref($tree)) {
-        return PIE::Expression::String->new(value => $tree );
+        return PIE::Expression::String->new(args => { value => $tree} );
     }
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
