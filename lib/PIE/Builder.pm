@@ -11,13 +11,10 @@ sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = "PIE::Expression::$name";
     $class->require;
-    if($class->can('meta')){
-        die unless $class->meta->does_role("PIE::Evaluatable");
-        return    $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
-    }
-    else {
-        return PIE::Expression->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
-    }
+    $class = "PIE::Expression" unless $class->can('meta');
+
+    return $class->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
+
 }
 
 sub build_expression {

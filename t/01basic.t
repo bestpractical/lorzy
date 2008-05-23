@@ -1,5 +1,5 @@
 use Test::More qw'no_plan';
-
+use strict;
 use_ok('PIE::Expression');
 use_ok('PIE::Evaluator');
 use_ok('PIE::Lambda');
@@ -65,34 +65,31 @@ my $eval9 = PIE::Evaluator->new();
 
 my $MATCH_REGEX = PIE::Lambda::Native->new(
     body => sub {
-        warn "HEY";
         my $args = shift;
         my $arg    = $args->{'tested-string'};
         my $regexp = $args->{'regexp'};
-
-        warn "REGEX CHECK: ". ($crg =~ m/$regexp/ )? 1 : 0;
         return ($arg =~ m/$regexp/ )? 1 : 0;
     },
 
     signature => {
         'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
-        'regex' => PIE::FunctionArgument->new( name => 'regex', type => 'Str' )
+        'regexp' => PIE::FunctionArgument->new( name => 'regexp', type => 'Str' )
         }
 
 );
 
 $eval9->set_named( 'match-regexp' => $MATCH_REGEX );
-warn "ORZ";
+
 $eval9->apply_script(
     $MATCH_REGEX, 
     {   'tested-string' => PIE::Expression::String->new( args => {value => 'I do love software'} ),
-        'regex' => PIE::Expression::String->new( args => { value => 'software' })
+        'regexp' => PIE::Expression::String->new( args => { value => 'software' })
     }
 );
 
 ok( $eval9->result->success, $eval9->result->error );
 is( $eval9->result->value, 1 );
-__END__
+
 my $builder = PIE::Builder->new();
 my $eval10 = PIE::Evaluator->new();
 $eval10->set_named( 'match-regexp' => $MATCH_REGEX );
@@ -107,7 +104,7 @@ $eval10->apply_script(
                     'condition' => {
                         name => 'match-regexp',
                         args => {
-                            regex           => 'software',
+                            regexp           => 'software',
                             'tested-string' => 'foo',
                         }
                     }
