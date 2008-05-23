@@ -30,10 +30,10 @@ has args => (
 
 
 
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $ev) = @_;
     my $lambda = $ev->resolve_name($self->name);
-    return $ev->apply_script_named_args( $lambda, $self->args );
+    return $ev->apply_script( $lambda, $self->args );
 }
 
 
@@ -41,15 +41,15 @@ package PIE::Expression::True;
 use Moose;
 
 extends 'PIE::Expression';
-sub evaluate_named_args {1}
+sub evaluate {1}
 
 package PIE::Expression::False;
 use Moose;
 extends 'PIE::Expression::True';
 
-sub evaluate_named_args {
+sub evaluate {
     my $self = shift;
-    return ! $self->SUPER::evaluate_named_args();
+    return ! $self->SUPER::evaluate();
 
 }
 
@@ -65,7 +65,7 @@ has signature => (
 );
 
 
-sub evaluate_named_args {
+sub evaluate {
     my $self = shift;
 
 }
@@ -94,7 +94,7 @@ has signature => (
     }
 );
 
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $evaluator) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, );
     
     
@@ -121,7 +121,7 @@ has signature => (
     default => sub { { value => PIE::FunctionArgument->new( name => 'value', type => 'Str')}});
     
     
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, 1);
     return $args->{value};
 
@@ -137,7 +137,7 @@ has signature => (
     default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
     
     
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
     my $result = $eval->get_named($self->args->{'symbol'});
     return $result->isa('PIE::Expression') ? $eval->run($result) : $result; # XXX: figure out evaluation order here

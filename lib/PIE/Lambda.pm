@@ -17,7 +17,7 @@ has args => (
     isa => 'HashRef[PIE::FunctionArgument]');
 
 
-sub check_named_args {
+sub check {
     my $self = shift;
     my $passed = shift; #reference to hash of provided args
     my $args = $self->args; # expected args
@@ -45,10 +45,10 @@ sub check_named_args {
 
 
 
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $evaluator, $args) = @_;
     
-    my ($missing, $unwanted)  = $self->check_named_args($args);
+    my ($missing, $unwanted)  = $self->check($args);
     
     return undef if (keys %$missing || keys %$unwanted);
     

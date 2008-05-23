@@ -10,11 +10,11 @@ has body => (
 
 
 
-sub evaluate_named_args {
+sub evaluate {
     my ($self, $evaluator, $args) = @_;
 
     
-    my ($missing, $unwanted)  = $self->check_named_args($args);
+    my ($missing, $unwanted)  = $self->check($args);
     
 
     die "Something went wrong with your args" if (keys %$missing || keys %$unwanted);

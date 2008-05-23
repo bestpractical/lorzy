@@ -50,14 +50,14 @@ my $script = PIE::Lambda->new(
 );
 
 my $eval7 = PIE::Evaluator->new();
-$eval7->apply_script_named_args($script, {} );
+$eval7->apply_script($script, {} );
 ok( $eval7->result->success );
 ok( $eval7->result->value );
 
 my $script2 = PIE::Lambda->new( nodes => [$if_true] );
 
 my $eval8 = PIE::Evaluator->new();
-$eval8->apply_script_named_args($script2, {});
+$eval8->apply_script($script2, {});
 ok( $eval8->result->success );
 ok( $eval8->result->value );
 
@@ -80,7 +80,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
 );
 
 $eval9->set_named( 'match-regexp' => $MATCH_REGEX );
-$eval9->apply_script_named_args(
+$eval9->apply_script(
     $MATCH_REGEX, 
     {   'tested-string' => PIE::Expression::String->new( value => 'I do love software' ),
         'regex' => PIE::Expression::String->new( value => 'software' )
@@ -94,7 +94,7 @@ my $builder = PIE::Builder->new();
 my $eval10 = PIE::Evaluator->new();
 $eval10->set_named( 'match-regexp' => $MATCH_REGEX );
 
-$eval10->apply_script_named_args(
+$eval10->apply_script(
     $builder->defun(
         ops => [
             {   name => 'IfThen',
