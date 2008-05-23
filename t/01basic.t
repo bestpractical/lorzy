@@ -82,6 +82,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
 );
 
 $eval9->set_named( 'match-regexp' => $MATCH_REGEX );
+warn "ORZ";
 $eval9->apply_script(
     $MATCH_REGEX, 
     {   'tested-string' => PIE::Expression::String->new( args => {value => 'I do love software'} ),
@@ -91,6 +92,7 @@ $eval9->apply_script(
 
 ok( $eval9->result->success, $eval9->result->error );
 is( $eval9->result->value, 1 );
+__END__
 my $builder = PIE::Builder->new();
 my $eval10 = PIE::Evaluator->new();
 $eval10->set_named( 'match-regexp' => $MATCH_REGEX );

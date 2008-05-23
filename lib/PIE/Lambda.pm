@@ -61,12 +61,12 @@ sub evaluate {
 
 
     $self->validate_args_or_die($args);
-    
-    
+
     my $arguments = $self->signature;
     for (sort keys %$arguments) {
         $evaluator->set_named( $_ => $args->{$_} );
     }
+
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
     }

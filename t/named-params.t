@@ -52,7 +52,7 @@ my $match_fail_p = PIE::Expression->new(
 
 $eval6->run($match_fail_p);
 ok( $eval6->result->success );
-
+warn $eval6->result->value;
 ok( !$eval6->result->value );
 
 
