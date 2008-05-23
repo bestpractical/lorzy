@@ -13,7 +13,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
         return $arg =~ m/$regexp/;
     },
 
-    args => {
+    signature => {
            'tested-string' =>  PIE::FunctionArgument->new( name =>              'tested-string' =>  type => 'Str' ),
            'regex'=>  PIE::FunctionArgument->new( name =>      'regex', type => 'Str' )
     }

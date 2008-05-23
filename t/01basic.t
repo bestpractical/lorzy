@@ -72,7 +72,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
         return ($arg =~ m/$regexp/ )? 1 : 0;
     },
 
-    args => {
+    signature => {
         'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
         'regex' => PIE::FunctionArgument->new( name => 'regex', type => 'Str' )
         }
@@ -111,7 +111,7 @@ $eval10->apply_script(
                 }
             }
         ],
-        args => {},
+        signature => {},
     ),
     {},
 );

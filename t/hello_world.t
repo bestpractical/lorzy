@@ -59,7 +59,7 @@ $hello->evaluator->set_named(
     'make-whoever',
     PIE::Lambda::Native->new(
         body => sub { my $args = shift; return $args->{'name'} },
-        args => {
+        signature => {
             name => PIE::FunctionArgument->new( name => 'name', type => 'Str' )
             }
 
@@ -70,7 +70,7 @@ my $tree    = [ { name => 'make-fred' } ];
 my $builder = PIE::Builder->new();
 my $script  = $builder->defun(
     ops => $tree,
-    args =>
+    signature =>
         { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 
@@ -80,7 +80,7 @@ is( $hello->run('jesse'), 'Hello fred' );
 
 my $script2 = $builder->defun(
     ops =>[ { name => 'make-bob' }, { name => 'make-fred' } ] ,
- args =>
+    signature =>
         { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 $hello->rules( [$script2] );
@@ -88,10 +88,10 @@ can_ok( $hello->rules->[0], 'evaluate' );
 
 is( $hello->run('jesse'), 'Hello fred' );
 
-my $script3 = $builder->defun( ops => [ { name => 'make-bob' } ], args =>
+my $script3 = $builder->defun( ops => [ { name => 'make-bob' } ], signature =>
     { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) } );
 my $script4 = $builder->defun ( ops => [ { name => 'make-fred' } ],
-args =>
+signature =>
     { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) } );
 
 $hello->rules( [ $script3, $script4 ] );

@@ -12,7 +12,7 @@ has bindings => (
     is => 'rw',
     isa => 'ArrayRef[Str]');
 
-has args => (
+has signature => (
     is => 'rw',
     isa => 'HashRef[PIE::FunctionArgument]');
 
@@ -20,7 +20,7 @@ has args => (
 sub check {
     my $self = shift;
     my $passed = shift; #reference to hash of provided args
-    my $args = $self->args; # expected args
+    my $args = $self->signature; # expected args
     
     
     my $missing = {};
@@ -52,7 +52,7 @@ sub evaluate {
     
     return undef if (keys %$missing || keys %$unwanted);
     
-    my $arguments = $self->args;
+    my $arguments = $self->signature;
     for (sort keys %$arguments) {
         $evaluator->set_named( $_ => $arguments->{$_} );
     }
