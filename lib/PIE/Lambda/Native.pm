@@ -1,6 +1,8 @@
 
 package PIE::Lambda::Native;
 use Moose; 
+use YAML;
+use Scalar::Defer;
 extends 'PIE::Lambda';
 
 has body => (
@@ -11,22 +13,17 @@ has body => (
 
 
 sub evaluate {
-    my ( $self, $evaluator, $args ) = @_;
+    my ( $self, $evaluator ) = @_;
 
-    my ( $missing, $unwanted ) = $self->check($args);
+    $self->validate_args_or_die;
 
-    use YAML;
-    die "Something went wrong with your args"
-        . YAML::Dump( $missing, $unwanted )
-        if ( keys %$missing || keys %$unwanted );
-
-    my $arguments = $self->signature;
-    my %args      = map {
-        $evaluator->run( $args->{$_} );
-        ( $_ => $evaluator->result->value )
-    } keys %$args;
-
-# XXX TODO - these are eagerly evaluated at this point. we probably want to lazy {} them with Scalar::Defer
+    my %args;
+    foreach my $key ( keys %{ $self->args } )  {
+        $args{$key} = lazy {  
+                        $evaluator->run( $self->args->{$key} );
+                        $evaluator->result->value  
+                    } 
+    } 
     my $r = $self->body->( \%args );
     return $r;
 }
