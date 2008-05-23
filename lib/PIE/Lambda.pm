@@ -58,12 +58,9 @@ sub validate_args_or_die {
 
 sub evaluate {
     my ($self, $evaluator) = @_;
-    my ($missing, $unwanted)  = $self->check();
+
+    $self->validate_args_or_die;
     
-    if (keys %$missing || keys %$unwanted) {
-            warn "Bad args! XXX TODO BETTER DIAGNOSTICS";
-        return undef;
-    }
     
     my $arguments = $self->signature;
     for (sort keys %$arguments) {
