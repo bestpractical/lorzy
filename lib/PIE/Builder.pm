@@ -15,7 +15,7 @@ sub build_op_expression {
         $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
     }
     else {
-        PIE::Expression->new( name => $name, args => $args || {} );
+        PIE::Expression->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
     }
 }
 

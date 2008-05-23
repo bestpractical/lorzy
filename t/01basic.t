@@ -115,21 +115,19 @@ $eval10->set_named( 'match-regexp' => $MATCH_REGEX );
 
 $eval10->apply_script_named_args(
     $builder->defun(
-        ops  => [ {name =>'IfThen'} ],
-        args => {
-            'if_true'   => PIE::Expression::String->new( value => 'hate' ),
-            'if_false'  => PIE::Expression::String->new( value => 'love' ),
-            'condition' => {
-                ops  => [ {name =>'match-regexp'} ],
+        ops => [ { name => 'IfThen',
                 args => {
-                    regex =>
-                        PIE::Expression::String->new( value => 'software' ),
-                    'tested-string' =>
-                        PIE::Expression::String->new( value => 'foo' )
-                }
-            },
-        }
-    )
+                    'if_true'   => 'hate',
+                    'if_false'  => 'love',
+                    'condition' => {
+                        name => 'match-regexp',
+                        args => {
+                            regex           => 'software',
+                            'tested-string' => 'foo',
+                            } } } } ],
+        args => {},
+    ),
+    {},
 );
 ok( $eval10->result->success );
 is( $eval10->result->value, ' love ' );
