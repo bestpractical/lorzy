@@ -10,12 +10,13 @@ use UNIVERSAL::require;
 sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = "PIE::Expression::$name";
-    if ($class->require) {
+    $class->require;
+    if($class->can('meta')){
         die unless $class->meta->does_role("PIE::Evaluatable");
-        $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
+        return    $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
     }
     else {
-        PIE::Expression->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
+        return PIE::Expression->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
     }
 }
 

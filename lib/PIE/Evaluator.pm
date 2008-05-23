@@ -22,17 +22,19 @@ has named => (
              });
 
 sub run {
-    my $self = shift;
+    my $self       = shift;
     my $expression = shift;
-    eval { 
-    my $ret = $expression->evaluate($self);
-    $self->result->value($ret) ; # XXX TODO - we should be separating out success and value
-    $self->result->success(1);
+    eval {
+        my $ret = $expression->evaluate($self);
+        $self->result->value($ret);
+        $self->result->success(1);
     };
-    if (my $err = $@) {
-#        die $err; # for now
-    
+    if ( my $err = $@ ) {
+
+        #        die $err; # for now
+
         $self->result->success(0);
+        $self->result->value(undef);
         $self->result->error($err);
     }
 

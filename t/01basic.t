@@ -50,14 +50,14 @@ my $script = PIE::Lambda->new(
 );
 
 my $eval7 = PIE::Evaluator->new();
-$eval7->apply_script($script);
+$eval7->apply_script_named_args($script, {} );
 ok( $eval7->result->success );
 ok( $eval7->result->value );
 
 my $script2 = PIE::Lambda->new( nodes => [$if_true] );
 
 my $eval8 = PIE::Evaluator->new();
-$eval8->apply_script($script2);
+$eval8->apply_script_named_args($script2, {});
 ok( $eval8->result->success );
 ok( $eval8->result->value );
 
@@ -69,53 +69,35 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
         my $arg    = $args{'tested-string'};
         my $regexp = $args{'regexp'};
 
-        return $arg =~ m/$regexp/;
+        return ($arg =~ m/$regexp/ )? 1 : 0;
     },
 
     args => {
-        'tested-string' => PIE::FunctionArgument->new(
-            name => 'tested-string' => type => 'Str'
-        ),
+        'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
         'regex' => PIE::FunctionArgument->new( name => 'regex', type => 'Str' )
         }
 
 );
 
 $eval9->set_named( 'match-regexp' => $MATCH_REGEX );
-
-my $match_script = PIE::Lambda->new(
-    nodes => [ PIE::Expression->new( name => 'match-regexp' ) ],
-    args  => {
-        'tested-string' => PIE::FunctionArgument->new(
-            name => 'tested-string',
-            type => 'Str'
-        ),
-        'regex' =>
-            PIE::FunctionArgument->new( name => 'regex', type => 'Regex' )
-    }
-);
-
 $eval9->apply_script_named_args(
-    $match_script,
-    {   'tested-string' =>
-            PIE::Expression::String->new( value => 'I do love hardware' ),
+    $MATCH_REGEX, 
+    {   'tested-string' => PIE::Expression::String->new( value => 'I do love software' ),
         'regex' => PIE::Expression::String->new( value => 'software' )
     }
 );
 
 ok( $eval9->result->success );
-
 is( $eval9->result->value, 1 );
+
 my $builder = PIE::Builder->new();
-
-#use YAML;
-
 my $eval10 = PIE::Evaluator->new();
 $eval10->set_named( 'match-regexp' => $MATCH_REGEX );
 
 $eval10->apply_script_named_args(
     $builder->defun(
-        ops => [ { name => 'IfThen',
+        ops => [
+            {   name => 'IfThen',
                 args => {
                     'if_true'   => 'hate',
                     'if_false'  => 'love',
@@ -124,11 +106,15 @@ $eval10->apply_script_named_args(
                         args => {
                             regex           => 'software',
                             'tested-string' => 'foo',
-                            } } } } ],
+                        }
+                    }
+                }
+            }
+        ],
         args => {},
     ),
     {},
 );
-ok( $eval10->result->success );
-is( $eval10->result->value, ' love ' );
+ok( $eval10->result->success, " Did not get an error: ".$eval10->result->error );
+is( $eval10->result->value, 'love' );
 
