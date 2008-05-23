@@ -64,6 +64,7 @@ sub run {
     
     $self->leave_stack_frame;
     return 1;
+
 }
 
 sub trace{}
@@ -85,8 +86,12 @@ sub apply_script {
         { ISA => "HASHREF" }
     );
     Carp::confess unless($lambda);
-   $lambda->args( $args );
-   $lambda->evaluate( $self);
+    #$lambda->args( $args );
+
+   my $ret = $lambda->evaluate( $self => $args);
+   warn "Coming back from te script, our ret was $ret";
+        $self->result->value($ret);
+        $self->result->success(1);
 }
 
 1;

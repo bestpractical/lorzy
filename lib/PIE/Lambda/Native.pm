@@ -13,17 +13,16 @@ has body => (
 
 
 sub evaluate {
-    my ( $self, $evaluator ) = @_;
+    my ( $self, $evaluator, $args ) = @_;
 
-    $self->validate_args_or_die;
+    $self->validate_args_or_die($args);
 
     my %args;
-    foreach my $key ( keys %{ $self->args } )  {
-        $args{$key} = lazy {  
-                        $evaluator->run( $self->args->{$key} );
-                        $evaluator->result->value  
-                    } 
-    } 
+    foreach my $key ( keys %$args ) {
+        $evaluator->run( $args->{$key} );
+        $args{$key} = $evaluator->result->value;
+
+    }
     my $r = $self->body->( \%args );
     return $r;
 }

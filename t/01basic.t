@@ -65,10 +65,12 @@ my $eval9 = PIE::Evaluator->new();
 
 my $MATCH_REGEX = PIE::Lambda::Native->new(
     body => sub {
+        warn "HEY";
         my $args = shift;
         my $arg    = $args->{'tested-string'};
         my $regexp = $args->{'regexp'};
 
+        warn "REGEX CHECK: ". ($crg =~ m/$regexp/ )? 1 : 0;
         return ($arg =~ m/$regexp/ )? 1 : 0;
     },
 

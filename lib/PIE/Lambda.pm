@@ -20,7 +20,7 @@ has args => (
 
 sub check_args {
     my $self = shift;
-    my $passed = $self->args; #reference to hash of provided args
+    my $passed = shift; #reference to hash of provided args
     my $expected = $self->signature; # expected args
     
     
@@ -45,7 +45,8 @@ sub check_args {
 
 sub validate_args_or_die {
     my $self = shift;
-    my ( $missing, $unwanted ) = $self->check_args();
+    my $args = shift;
+    my ( $missing, $unwanted ) = $self->check_args( $args);
 
     if ( keys %$missing || keys %$unwanted ) {
         die "Function signature mismatch \n".
@@ -55,21 +56,21 @@ sub validate_args_or_die {
     }
 } 
 
-
 sub evaluate {
-    my ($self, $evaluator) = @_;
+    my ($self, $evaluator, $args) = @_;
 
-    $self->validate_args_or_die;
+
+    $self->validate_args_or_die($args);
     
     
     my $arguments = $self->signature;
     for (sort keys %$arguments) {
-        $evaluator->set_named( $_ => $arguments->{$_} );
+        $evaluator->set_named( $_ => $args->{$_} );
     }
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
     }
-    
+    return $evaluator->result->value; 
     
 }
 
