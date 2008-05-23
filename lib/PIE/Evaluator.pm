@@ -25,7 +25,7 @@ sub run {
     my $self       = shift;
     my $expression = shift;
     eval {
-        my $ret = $expression->evaluate($self);
+        my $ret = $expression->evaluate_named_args($self);
         $self->result->value($ret);
         $self->result->success(1);
     };
@@ -46,13 +46,6 @@ sub resolve_name {
     $self->get_named($name);
 }
 
-
-sub apply_script {
-    # self, a lambda, any number of positional params. (to be replaced with a params object?)
-    my ($self, $lambda, @exp) = validate_pos(@_, { isa => 'PIE::Evaluator'}, { ISA => 'PIE::Lambda'}, (0) x (@_ - 2)  ) ;
-        # XXX: cleanup, unmask, etc
-        $lambda->evaluate($self, @exp);
-}
 
 sub apply_script_named_args {
     # self, a lambda, any number of positional params. (to be replaced with a params object?)

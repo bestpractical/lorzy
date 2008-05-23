@@ -12,6 +12,11 @@ has elements => (
    is => 'ro',
    isa => 'ArrayRef');
 
+has signature => ( 
+    is => 'rw',
+    default => sub { {}},
+    isa => 'HashRef[PIE::FunctionArgument]');
+
 has args => (
     is => 'rw',
     default => sub { {} },
@@ -25,21 +30,10 @@ has args => (
 
 
 
-sub evaluate {
+sub evaluate_named_args {
     my ($self, $ev) = @_;
-    
-    if ($self->elements) {
-        # deprecated
-        my $func = $self->elements->[0];
-        my @exp = @{ $self->elements }[1..$#{ $self->elements }];
-        my $lambda = $ev->resolve_name($func);
-        return $ev->apply_script($lambda, @exp);
-    }
-
     my $lambda = $ev->resolve_name($self->name);
     return $ev->apply_script_named_args( $lambda, $self->args );
-
-    
 }
 
 
@@ -47,16 +41,15 @@ package PIE::Expression::True;
 use Moose;
 
 extends 'PIE::Expression';
-
-sub evaluate {1}
+sub evaluate_named_args {1}
 
 package PIE::Expression::False;
 use Moose;
 extends 'PIE::Expression::True';
 
-sub evaluate {
+sub evaluate_named_args {
     my $self = shift;
-    return ! $self->SUPER::evaluate();
+    return ! $self->SUPER::evaluate_named_args();
 
 }
 
@@ -64,10 +57,15 @@ package PIE::Expression::Loop;
 use Moose;
 extends 'PIE::Expression';
 
-has items => ( is => 'rw', isa => 'ArrayRef[PIE::Evaluatable]');
-has block => ( is => 'rw', isa => 'PIE::Evaluatable');
+has signature => (
+    is => 'ro',
+    default => sub {  items => PIE::FunctionArgument->new(name => 'items', type => 'ArrayRef[PIE::Evaluatable]'),
+                      block => PIE::FunctionARgument->new(name => 'block', type => 'PIE::Evaluatable')}
 
-sub evaluate {
+);
+
+
+sub evaluate_named_args {
     my $self = shift;
 
 }
@@ -75,36 +73,40 @@ sub evaluate {
 package PIE::Expression::IfThen;
 use Moose;
 extends 'PIE::Expression';
+use Params::Validate qw/validate_pos/;
 
+has signature => (
+    is      => 'ro',
+    default => sub {
+         {
+            condition => PIE::FunctionArgument->new(
+                name => 'condition',
+                isa  => 'PIE::Evaluatable'),
 
-has condition => (
-    is => 'rw',
-    does => 'PIE::Evaluatable');
-    
-has if_true => (
-    is => 'rw',
-    does => 'PIE::Evaluatable');
-    
-has if_false => (
-    is => 'rw',
-    does => 'PIE::Evaluatable');
-    
+            if_true => PIE::FunctionArgument->new(
+                name => 'if_true',
+                isa  => 'PIE::Evaluatable'),
+           if_false => PIE::FunctionArgument->new(
+                name => 'if_false',
+                isa  => 'PIE::Evaluatable'
+                )
+            }
+    }
+);
 
-sub arguments { return qw(condition if_true if_false)} 
+sub evaluate_named_args {
+    my ($self, $evaluator) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, );
     
-
-sub evaluate {
-    my $self = shift;
-    my $evaluator = shift;
-    $evaluator->run($self->condition);
+    
+    $evaluator->run($self->args->{condition});
     
 
     if ($evaluator->result->value) {
         
-        $evaluator->run($self->if_true);
+        $evaluator->run($self->args->{if_true});
         return $evaluator->result->value;
         }    else { 
-        $evaluator->run($self->if_false);
+        $evaluator->run($self->args->{if_false});
         return $evaluator->result->value;
     }
 }
@@ -112,31 +114,33 @@ sub evaluate {
 package PIE::Expression::String;
 use Moose;
 extends 'PIE::Expression';
+use Params::Validate qw/validate_pos/;
 
-has value => (
-    is => 'rw',
-    isa => 'Str | Undef');
+has signature => (
+    is => 'ro',
+    default => sub { { value => PIE::FunctionArgument->new( name => 'value', type => 'Str')}});
     
     
-sub evaluate {
-    my $self = shift;
-    return $self->value;
+sub evaluate_named_args {
+    my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, 1);
+    return $args->{value};
 
 }
 
 package PIE::Expression::Symbol;
 use Moose;
 extends 'PIE::Expression';
+use Params::Validate qw/validate_pos/;
 
-has symbol => (
-    is => 'rw',
-    isa => 'Str');
+has signature => (
+    is => 'ro',
+    default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
     
     
-sub evaluate {
-    my ($self, $ev) = @_;
-    my $result = $ev->get_named($self->symbol);
-    return $result->isa('PIE::Expression') ? $ev->run($result) : $result; # XXX: figure out evaluation order here
+sub evaluate_named_args {
+    my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
+    my $result = $eval->get_named($self->args->{'symbol'});
+    return $result->isa('PIE::Expression') ? $eval->run($result) : $result; # XXX: figure out evaluation order here
 }
 
 1;

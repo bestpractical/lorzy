@@ -17,33 +17,6 @@ has args => (
     isa => 'HashRef[PIE::FunctionArgument]');
 
 
-sub check_args {
-    my $self = shift;
-    my $passed = shift;
-    my $bindings = $self->bindings;
-    Carp::croak "unmatched number of arguments. ".($#{$bindings}+1)." expected. Got ".($#{$passed}+1) unless $#{$bindings} == $#{$passed};
-
-}
-
-sub bind_expressions {
-    my ($self, $ev, @exp) = @_;
-    $self->check_args(\@exp);
-    my $bindings = $self->bindings;
-    $ev->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
-}
-
-sub evaluate {
-    my $self = shift;
-    my $evaluator = shift;
-
-    $self->bind_expressions( $evaluator, @_ );
-
-    foreach my $node (@{$self->nodes}) {
-        $evaluator->run($node);
-    }
-}
-
-
 sub check_named_args {
     my $self = shift;
     my $passed = shift; #reference to hash of provided args

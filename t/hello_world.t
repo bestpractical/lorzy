@@ -58,7 +58,7 @@ $hello->evaluator->set_named( 'make-bob',
 $hello->evaluator->set_named(
     'make-whoever',
     PIE::Lambda::Native->new(
-        body => sub { my %args = @_; return $args{'name'} },
+        body => sub { my $args = shift; return $args->{'name'} },
         args => {
             name => PIE::FunctionArgument->new( name => 'name', type => 'Str' )
             }
@@ -75,7 +75,7 @@ my $script  = $builder->defun(
 );
 
 $hello->rules( [$script] );
-can_ok( $hello->rules->[0], 'evaluate' );
+can_ok( $hello->rules->[0], 'evaluate_named_args' );
 is( $hello->run('jesse'), 'Hello fred' );
 
 my $script2 = $builder->defun(
@@ -84,7 +84,7 @@ my $script2 = $builder->defun(
         { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 $hello->rules( [$script2] );
-can_ok( $hello->rules->[0], 'evaluate' );
+can_ok( $hello->rules->[0], 'evaluate_named_args' );
 
 is( $hello->run('jesse'), 'Hello fred' );
 
@@ -96,12 +96,12 @@ args =>
 
 $hello->rules( [ $script3, $script4 ] );
 
-can_ok( $hello->rules->[0], 'evaluate' );
-can_ok( $hello->rules->[1], 'evaluate' );
+can_ok( $hello->rules->[0], 'evaluate_named_args' );
+can_ok( $hello->rules->[1], 'evaluate_named_args' );
 is( $hello->run('jesse'), 'Hello fred' );
 
 $hello->rules( [ $hello->evaluator->get_named('make-whoever') ] );
-can_ok( $hello->rules->[0], 'evaluate' );
+can_ok( $hello->rules->[0], 'evaluate_named_args' );
 is( $hello->run('jesse'), 'Hello jesse' );
 
 1;

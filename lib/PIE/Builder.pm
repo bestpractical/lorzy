@@ -25,13 +25,10 @@ sub build_expression {
     if (!ref($tree)) {
         return PIE::Expression::String->new(value => $tree );
     }
-    elsif (ref($tree) eq 'ARRAY') {
-        Carp::confess ("Aaaaa bad deprecated code");
-        my ($func, @rest) = @$tree;
-        return PIE::Expression->new( elements => [$func, map { $self->build_expression($_) } @rest]);
-    }
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
+    } else {
+        Carp::confess("Don't know what to do with a tree that looksl ike ". YAML::Dump($tree));
     }
 }
 
@@ -39,16 +36,7 @@ sub build_expression {
 sub defun {
     my $self = shift;
     my %args = validate( @_, { ops => 1, args => 1 });
-    warn YAML::Dump(\%args); use YAML;
     return PIE::Lambda->new( nodes => [map { $self->build_expression($_) } @{$args{ops}} ], args => $args{args} );
 }
-
-sub build_expressions {
-    my $self = shift;
-    my $ops = shift;
-
-    return PIE::Lambda->new( nodes => [map { $self->build_expression($_) } @$ops ] );
-}
-
 
 1;
