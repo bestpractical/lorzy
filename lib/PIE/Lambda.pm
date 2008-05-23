@@ -63,13 +63,14 @@ sub evaluate {
     $self->validate_args_or_die($args);
 
     my $arguments = $self->signature;
-    for (sort keys %$arguments) {
-        $evaluator->set_named( $_ => $args->{$_} );
-    }
 
+    $evaluator->push_stack_vars( $args );
     foreach my $node (@{$self->nodes}) {
         $evaluator->run($node);
     }
+
+    $evaluator->pop_stack_vars( $args );
+
     return $evaluator->result->value; 
     
 }

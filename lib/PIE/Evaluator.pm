@@ -21,6 +21,17 @@ has named => (
                  set       => 'set_named',
              });
 
+has stack_vars => (
+    is => 'rw',
+    metaclass => 'Collection::Array',
+    isa       => 'ArrayRef[HashRef]',
+    default   => sub { [] },
+    provides  => {
+        'push' => 'push_stack_vars',
+        'pop'  => 'pop_stack_vars',
+    }
+);
+
 has stack_depth => ( 
             is => 'rw',
             isa => 'Int',
@@ -38,8 +49,6 @@ sub leave_stack_frame {
     die "Trying to leave stack frame 0. Too many returns. Something relaly bad happened" if ($self->stack_depth == 0);
     $self->stack_depth($self->stack_depth-1);
 }
-
-
 
 sub run {
     my $self       = shift;
@@ -72,9 +81,9 @@ sub trace{}
 
 sub resolve_name {
     my ($self, $name) = @_;
-    $self->get_named($name);
+    my $stack = $self->stack_vars->[-1] || {};
+    $stack->{$name} || $self->get_named($name);
 }
-
 
 sub apply_script {
 
