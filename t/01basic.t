@@ -19,21 +19,21 @@ ok( $eval2->run($false) );
 ok( !$eval2->result->value );
 ok( $eval2->result->success );
 
-my $if_true = PIE::Expression::IfThen->new(
+my $if_true = PIE::Expression::IfThen->new( args => {
     condition => PIE::Expression::True->new(),
     if_true   => PIE::Expression::True->new(),
-    if_false  => PIE::Expression::False->new()
+    if_false  => PIE::Expression::False->new()}
 );
 
 my $eval3 = PIE::Evaluator->new();
 ok( $eval3->run($if_true) );
 ok( $eval3->result->value );
-ok( $eval2->result->success );
+ok( $eval3->result->success, $eval3->result->error );
 
-my $if_false = PIE::Expression::IfThen->new(
+my $if_false = PIE::Expression::IfThen->new( args => {
     condition => PIE::Expression::False->new(),
     if_true   => PIE::Expression::True->new(),
-    if_false  => PIE::Expression::False->new()
+    if_false  => PIE::Expression::False->new()}
 );
 
 my $eval4 = PIE::Evaluator->new();
@@ -87,7 +87,7 @@ $eval9->apply_script(
     }
 );
 
-ok( $eval9->result->success );
+ok( $eval9->result->success, $eval9->result->error );
 is( $eval9->result->value, 1 );
 
 my $builder = PIE::Builder->new();

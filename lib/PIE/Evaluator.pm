@@ -25,6 +25,7 @@ sub run {
     my $self       = shift;
     my $expression = shift;
     eval {
+        Carp::confess unless ($expression);
         my $ret = $expression->evaluate($self);
         $self->result->value($ret);
         $self->result->success(1);

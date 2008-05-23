@@ -122,8 +122,8 @@ has signature => (
     
     
 sub evaluate {
-    my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, 1);
-    return $args->{value};
+    my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
+    return $self->args->{value};
 
 }
 
@@ -138,7 +138,7 @@ has signature => (
     
     
 sub evaluate {
-    my ($self, $eval, $args) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
+    my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
     my $result = $eval->get_named($self->args->{'symbol'});
     return $result->isa('PIE::Expression') ? $eval->run($result) : $result; # XXX: figure out evaluation order here
 }

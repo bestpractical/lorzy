@@ -6,9 +6,9 @@ use_ok('PIE::Evaluator');
 use_ok('PIE::FunctionArgument');
 my $MATCH_REGEX = PIE::Lambda::Native->new(
     body => sub {
-        my %args = (@_);
-        my $arg = $args{'tested-string'};
-        my $regexp = $args{'regexp'};
+        my $args = shift;
+        my $arg = $args->{'tested-string'};
+        my $regexp = $args->{'regexp'};
             
         return $arg =~ m/$regexp/;
     },
