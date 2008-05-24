@@ -8,16 +8,22 @@ function lorzy_show_expression_str(str, parent) {
 
 function lorzy_show_expression(parent) {
 
+    if( this.name == 'progn') {
+        jQuery.each(this.nodes, function () { lorzy_show_expression.apply(this,[parent]) });
+
+        return;
+    }
+
+    
+    
+
     var ret = parent.createAppend('div', { className: this.name });
     ret.addClass('lorzy-code');
     var that = this;
     jQuery(ret)
     .html(this.name+': '+this.toString() );
-//      .click(function () { alert (that.name) });
     jQuery(ret).createAppend('div', { className: 'name'} , [this.name]);
     ret = jQuery(ret).createAppend('div', { className: 'lorzy-code-args'});
-
-
 
     jQuery.each(this.args, function(name, exp) {
         console.log(name +  ": "+exp);
@@ -44,9 +50,15 @@ function lorzy_show(ops) {
         });
         var tree = lorzy_generate_struct(jQuery('#wrapper'));
         console.log(tree.toJSON());
-//    jQuery('#wrapper').after(jQuery('<a href="#">Traverse</a>').attr('id', 'clicky'));
+    jQuery('#wrapper').after(jQuery('<a href="#">Traverse</a>').attr('id', 'clicky'));
     
- //   jQuery('#clicky').click(function () { lorzy_generate_struct(jQuery('#wrapper'))});
+   jQuery('#clicky').click(function () { 
+   
+    var x =  lorzy_generate_struct(jQuery('#wrapper'));
+    
+    console.log(x.toJSON());
+   
+   });
 };
 
 function lorzy_generate_struct(parent) {
@@ -82,7 +94,12 @@ function lorzy_generate_op (op) {
 function lorzy_generate_args_struct(args) {
     var myArray = {};
      jQuery.map(args, function (op)  {  
-               myArray[ jQuery(op).children('.name').text() ] =  lorzy_generate_op(jQuery(op).children('.value').children());
+               var kids = lorzy_generate_struct(jQuery(op).children('.value'));
+               if (kids.length == 1) {
+                myArray[ jQuery(op).children('.name').text() ] =   kids[0] ;
+               } else {
+                myArray[ jQuery(op).children('.name').text() ] =  { 'progn': kids} ;
+               }
     });
 
 
