@@ -1,11 +1,21 @@
-div.lorzy-code {
-  color: blue;
-};
-
 div.lorzy-code-arg {
   color: green;
-};
+}
 
 span.lorzy-const {
   color: black;
-};
+}
+
+div.selected {
+  border: 1px solid #ff0000;
+}
+
+div.hover {
+  border: 1px solid #990000;
+}
+
+div.lorzy-code {
+  width: 300px;
+  color: blue;
+}
+
