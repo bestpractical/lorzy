@@ -12,7 +12,7 @@ has body => (
 
 
 
-sub evaluate {
+sub apply {
     my ( $self, $evaluator, $args ) = @_;
 
     $self->validate_args_or_die($args);

@@ -96,7 +96,7 @@ sub apply_script {
     );
     Carp::confess unless($lambda);
 
-    my $ret = $lambda->evaluate( $self => $args);
+    my $ret = $lambda->apply( $self => $args);
     $self->result->value($ret);
     $self->result->success(1);
 }

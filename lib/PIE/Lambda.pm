@@ -1,7 +1,6 @@
 
 package PIE::Lambda;
 use Moose; use MooseX::Params::Validate;
-with 'PIE::Evaluatable';
 
 has nodes => (
     is => 'rw',
@@ -11,12 +10,6 @@ has nodes => (
 has signature => (
     is => 'rw',
     isa => 'HashRef[PIE::FunctionArgument]');
-
-has args => (
-    is => 'rw',
-    default => sub { {} },
-    isa => 'HashRef[PIE::Expression]');
-
 
 sub check_args {
     my $self = shift;
@@ -56,7 +49,7 @@ sub validate_args_or_die {
     }
 } 
 
-sub evaluate {
+sub apply {
     my ($self, $evaluator, $args) = @_;
 
 
