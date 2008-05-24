@@ -4,26 +4,13 @@ use JSON;
 
 template 'index.html' => page {'hey'};
 template 'lorzy' => page { 
-
+    div { { id is 'result' }};
     div { { id is 'wrapper' } };
  outs_raw('<style>#wrapper div { padding-left:1em;} </style>');
 my $ops = [
-            {  name => 'hateyou', args => {}},
-
             {   name => 'IfThen',
                 args => {
-                    'if_true'   =>  { 
-                                    name => 'progn',
-                                    nodes => [
-                                            { name => 'IsTrue', args => {}}, 
-                                            { name => 'IsFalse', args => {}},
-                                            { name => 'IsTrue', args => {}}
-
-
-                                    ]
-
-
-                    },
+                    'if_true'   =>  'hate',
                     'if_false'  => 'love',
                     'condition' => {
                         name => 'match-regexp',

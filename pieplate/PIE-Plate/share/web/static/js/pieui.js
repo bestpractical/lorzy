@@ -75,6 +75,21 @@ function lorzy_show(ops) {
     jQuery('#wrapper').after(jQuery('<a href="#">Remove</a>').attr('id', 'remove-entry'));
     jQuery('#wrapper').after(jQuery('<a href="#">Add If</a>').attr('id', 'add-entry-if'));
     jQuery('#wrapper').after(jQuery('<a href="#">Traverse</a>').attr('id', 'clicky'));
+    jQuery('#wrapper').after(jQuery('<a href="#">Test</a>').attr('id', 'testy'));
+
+    jQuery('#testy').click(function () {
+        jQuery.ajax({
+    'url': '/=/action/Pie.Plate.Action.RunL.xml',
+    'datatype': 'text/xml',
+    'type': 'post',
+    'success': function(xml) { 
+            jQuery('#result').append(jQuery(xml).text())
+}, 
+    'data': 'struct='+lorzy_generate_struct(jQuery('#wrapper')).toJSON()
+})
+
+
+    });
 
     jQuery('#remove-entry').click(function() {
         var el = jQuery('div.selected');
@@ -98,7 +113,8 @@ function lorzy_show(ops) {
     });
     
     jQuery('#clicky').click(function () { 
-   
+  
+ 
     var x =  lorzy_generate_struct(jQuery('#wrapper'));
     
     console.log(x.toJSON());

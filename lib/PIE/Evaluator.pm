@@ -58,7 +58,7 @@ sub run {
     my $self       = shift;
     my $expression = shift;
     eval {
-        Carp::confess unless ($expression);
+        Carp::confess unless ($expression && $expression->can('evaluate'));
         my $ret = $expression->evaluate($self);
 
 
