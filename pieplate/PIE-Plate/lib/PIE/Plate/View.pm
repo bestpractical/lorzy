@@ -5,6 +5,8 @@ use JSON;
 template 'index.html' => page {'hey'};
 template 'lorzy' => page { 
 
+    div { { id is 'wrapper' } };
+
 my $ops = [
             {   name => 'IfThen',
                 args => {
@@ -34,3 +36,4 @@ lorzy_show($json_text);
 
 
 1;
+

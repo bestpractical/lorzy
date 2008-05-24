@@ -1,7 +1,8 @@
 package PIE::Plate;
 
 Jifty->web->add_javascript(
-    qw( pieui.js ));
+    qw( jquery.superflydom.js
+        pieui.js ));
 
 
 1;
