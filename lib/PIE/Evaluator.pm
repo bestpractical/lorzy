@@ -56,6 +56,8 @@ sub run {
     $self->enter_stack_frame;
     eval {
         Carp::confess unless ($expression);
+        $YAML::DumpCode++;
+        warn YAML::Dump($expression);
         my $ret = $expression->evaluate($self);
         $self->result->value($ret);
         $self->result->success(1);
@@ -82,7 +84,9 @@ sub trace{}
 sub resolve_name {
     my ($self, $name) = @_;
     my $stack = $self->stack_vars->[-1] || {};
-    $stack->{$name} || $self->get_named($name);
+    warn YAML::Dump($name); 
+    Carp::cluck if ref($name);
+    $stack->{$name} || $self->get_named($name) || die "Could not find symbol $name in the current lexical context.";
 }
 
 sub apply_script {
@@ -95,7 +99,7 @@ sub apply_script {
         { ISA => "HASHREF" }
     );
     Carp::confess unless($lambda);
-
+    
     my $ret = $lambda->apply( $self => $args);
     $self->result->value($ret);
     $self->result->success(1);
