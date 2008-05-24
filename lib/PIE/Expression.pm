@@ -33,7 +33,6 @@ has args => (
 sub evaluate {
     my ($self, $ev) = @_;
     my $lambda = $ev->resolve_symbol_name($self->name);
-    die "Function ".$self->name." not defined"  unless $lambda;
     $ev->apply_script( $lambda, $self->args );
     return $ev->result->value;
 }

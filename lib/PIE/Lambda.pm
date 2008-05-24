@@ -55,15 +55,15 @@ sub apply {
 
     $self->validate_args_or_die($args);
 
-    my $arguments = $self->signature;
 
-    $evaluator->push_stack_vars( $args );
+
+    $evaluator->enter_stack_frame( args => $args);
     my $res;
     foreach my $node (@{$self->nodes}) {
        $res =  $node->evaluate($evaluator);
     }
 
-    $evaluator->pop_stack_vars( $args );
+    $evaluator->leave_stack_frame(); 
     return $res;
     #return $evaluator->result->value; 
 

@@ -41,20 +41,22 @@ has stack_depth => (
 
 sub enter_stack_frame {
     my $self = shift;
+    my %args = validate(@_, {args => 1});
+
     $self->stack_depth($self->stack_depth+1);
+    $self->push_stack_vars($args{'args'});
 }
 
 sub leave_stack_frame {
     my $self = shift;
     die "Trying to leave stack frame 0. Too many returns. Something relaly bad happened" if ($self->stack_depth == 0);
+    $self->pop_stack_vars();
     $self->stack_depth($self->stack_depth-1);
 }
 
 sub run {
     my $self       = shift;
     my $expression = shift;
-    $self->enter_stack_frame;
-#    warn( ("-" x $self->stack_depth) .  "$expression enter");
     eval {
         Carp::confess unless ($expression);
         my $ret = $expression->evaluate($self);
@@ -70,17 +72,8 @@ sub run {
         $self->result->value(undef);
         $self->result->error($err);
     }
-
-#    warn (("-" x $self->stack_depth) , " returns : " . $self->result->value(). " - ".$self->result->success . " - " .$self->result->error);
-#    warn (("-" x $self->stack_depth),  "$expression done");
-    $self->trace();
-    
-    $self->leave_stack_frame;
     return $self->result->success;
 }
-
-sub trace{}
-
 
 sub resolve_symbol_name {
     my ($self, $name) = @_;
