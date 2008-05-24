@@ -99,14 +99,11 @@ has signature => (
 sub evaluate {
     my ($self, $evaluator) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, );
 
-    $evaluator->run($self->args->{condition});
-
-    if ($evaluator->result->value) {
-        $evaluator->run($self->args->{if_true});
-        return $evaluator->result->value;
+    my $truth= $self->args->{condition}->evaluate($evaluator);
+    if ($truth) {
+        return    $self->args->{if_true}->evaluate($evaluator);
         }    else { 
-        $evaluator->run($self->args->{if_false});
-        return $evaluator->result->value;
+        return $self->args->{if_false}->evaluate($evaluator);
     }
 }
 
