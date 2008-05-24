@@ -33,7 +33,9 @@ sub build_expression {
 sub defun {
     my $self = shift;
     my %args = validate( @_, { ops => 1, signature => 1 });
-    return PIE::Lambda->new( nodes => [map { $self->build_expression($_) } @{$args{ops}} ], signature => $args{signature} );
+    return PIE::Lambda->new( progn => PIE::Expression::ProgN->new(
+                                                                  nodes => [map { $self->build_expression($_) } @{$args{ops}} ]),
+                             signature => $args{signature} );
 }
 
 1;

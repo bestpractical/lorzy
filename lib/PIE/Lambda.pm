@@ -2,9 +2,11 @@
 package PIE::Lambda;
 use Moose; use MooseX::Params::Validate;
 
-has nodes => (
-    is => 'rw',
-    isa => 'ArrayRef',
+has progn => (
+    is => 'ro',
+    isa => 'PIE::Expression::ProgN',
+    default => sub { PIE::Expression::ProgN->new },
+    handles => [qw(nodes)]
 );
 
 has signature => (
@@ -55,13 +57,8 @@ sub apply {
 
     $self->validate_args_or_die($args);
 
-
-
     $evaluator->enter_stack_frame( args => $args);
-    my $res;
-    foreach my $node (@{$self->nodes}) {
-       $res =  $node->evaluate($evaluator);
-    }
+    my $res = $self->progn->evaluate($evaluator);
 
     $evaluator->leave_stack_frame(); 
     return $res;

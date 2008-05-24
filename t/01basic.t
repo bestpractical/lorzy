@@ -42,10 +42,11 @@ ok( !$eval4->result->value );
 ok( $eval4->result->success );
 
 my $script = PIE::Lambda->new(
+   progn => PIE::Expression::ProgN->new(
     nodes => [
         PIE::Expression::True->new()
 
-    ],
+    ]),
 
 );
 
@@ -54,7 +55,9 @@ $eval7->apply_script($script, {} );
 ok( $eval7->result->success );
 ok( $eval7->result->value );
 
-my $script2 = PIE::Lambda->new( nodes => [$if_true] );
+my $script2 = PIE::Lambda->new(
+   progn => PIE::Expression::ProgN->new(
+ nodes => [$if_true] ) );
 
 my $eval8 = PIE::Evaluator->new();
 $eval8->apply_script($script2, {});

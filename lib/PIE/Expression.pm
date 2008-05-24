@@ -137,6 +137,25 @@ sub evaluate {
 
 }
 
+package PIE::Expression::ProgN;
+use Moose;
+extends 'PIE::Expression';
+
+has nodes => (
+    is => 'rw',
+    isa => 'ArrayRef',
+);
+
+sub evaluate {
+    my ($self, $evaluator) = @_;
+    my $res;
+    Carp::cluck unless $self->nodes;
+    foreach my $node (@{$self->nodes}) {
+       $res =  $node->evaluate($evaluator);
+    }
+    return $res;
+}
+
 package PIE::Expression::Symbol;
 use Moose;
 extends 'PIE::Expression';
