@@ -58,13 +58,15 @@ sub apply {
     my $arguments = $self->signature;
 
     $evaluator->push_stack_vars( $args );
+    my $res;
     foreach my $node (@{$self->nodes}) {
-        $evaluator->run($node);
+       $res =  $node->evaluate($evaluator);
     }
 
     $evaluator->pop_stack_vars( $args );
+    return $res;
+    #return $evaluator->result->value; 
 
-    return $evaluator->result->value; 
     
 }
 

@@ -12,11 +12,13 @@ my $eval = PIE::Evaluator->new;
 my $builder = PIE::Builder->new();
 
 my $A_SIDE = PIE::Builder->defun( 
-        ops => [ {
-                    name => 'Symbol',
-                    args => { symbol => 'x'},
-                    { name => 'Symbol',
-                        args => { symbol => 'y'}}}],
+        ops => [ 
+        
+         { name => 'Symbol', args => { symbol => 'x'}},
+                    { name => 'Symbol', args => { symbol => 'y'} }
+                
+                
+                ],
         signature => { x => PIE::FunctionArgument->new(name => 'x', type => 'Str')});
 
 
@@ -28,8 +30,8 @@ my $defined_b = $builder->defun(
         { y => PIE::FunctionArgument->new( name => 'y', type => 'String' ) }
 );
 
+$eval->set_named( b=> $defined_b);
 
-
-$eval->apply_script( $defined_b, { y => 'Y123' });
+$eval->run( $builder->build_expression( { name => 'b', args => { y => 'Y123' }}));
 ok (!$eval->result->success);
-is($eval->result->error,'');
+like($eval->result->error,qr/Could not find symbol y in the current lexical context/);

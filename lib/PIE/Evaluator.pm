@@ -54,16 +54,16 @@ sub run {
     my $self       = shift;
     my $expression = shift;
     $self->enter_stack_frame;
+#    warn( ("-" x $self->stack_depth) .  "$expression enter");
     eval {
         Carp::confess unless ($expression);
-        $YAML::DumpCode++;
-        warn YAML::Dump($expression);
         my $ret = $expression->evaluate($self);
+
+
         $self->result->value($ret);
         $self->result->success(1);
     };
     if ( my $err = $@ ) {
-
         #        die $err; # for now
 
         $self->result->success(0);
@@ -71,11 +71,12 @@ sub run {
         $self->result->error($err);
     }
 
+#    warn (("-" x $self->stack_depth) , " returns : " . $self->result->value(). " - ".$self->result->success . " - " .$self->result->error);
+#    warn (("-" x $self->stack_depth),  "$expression done");
     $self->trace();
     
     $self->leave_stack_frame;
-    return 1;
-
+    return $self->result->success;
 }
 
 sub trace{}
@@ -84,7 +85,6 @@ sub trace{}
 sub resolve_name {
     my ($self, $name) = @_;
     my $stack = $self->stack_vars->[-1] || {};
-    warn YAML::Dump($name); 
     Carp::cluck if ref($name);
     $stack->{$name} || $self->get_named($name) || die "Could not find symbol $name in the current lexical context.";
 }
@@ -99,10 +99,10 @@ sub apply_script {
         { ISA => "HASHREF" }
     );
     Carp::confess unless($lambda);
-    
     my $ret = $lambda->apply( $self => $args);
     $self->result->value($ret);
     $self->result->success(1);
+    return $self->result->value;
 }
 
 1;

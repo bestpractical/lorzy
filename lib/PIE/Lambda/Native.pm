@@ -16,14 +16,7 @@ sub apply {
     my ( $self, $evaluator, $args ) = @_;
 
     $self->validate_args_or_die($args);
-
-    my %args;
-    foreach my $key ( keys %$args ) {
-        $evaluator->run( $args->{$key} );
-        $args{$key} = $evaluator->result->value;
-
-    }
-    my $r = $self->body->( \%args );
+    my $r = $self->body->( {map { $_ => $args->{$_}->evaluate($evaluator) } keys %$args });
     return $r;
 }
 
