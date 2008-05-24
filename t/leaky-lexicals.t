@@ -22,7 +22,7 @@ my $A_SIDE = PIE::Builder->defun(
         signature => { x => PIE::FunctionArgument->new(name => 'x', type => 'Str')});
 
 
-$eval->set_named( 'a' => $A_SIDE );
+$eval->set_global_symbol( 'a' => $A_SIDE );
 
 my $defined_b = $builder->defun(
     ops => [{ name => 'a', args => { x => 'x456' }} ],
@@ -30,7 +30,7 @@ my $defined_b = $builder->defun(
         { y => PIE::FunctionArgument->new( name => 'y', type => 'String' ) }
 );
 
-$eval->set_named( b=> $defined_b);
+$eval->set_global_symbol( b=> $defined_b);
 
 $eval->run( $builder->build_expression( { name => 'b', args => { y => 'Y123' }}));
 ok (!$eval->result->success);

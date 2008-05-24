@@ -78,7 +78,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
 
 );
 
-$eval9->set_named( 'match-regexp' => $MATCH_REGEX );
+$eval9->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 $eval9->apply_script(
     $MATCH_REGEX, 
@@ -92,7 +92,7 @@ is( $eval9->result->value, 1 );
 
 my $builder = PIE::Builder->new();
 my $eval10 = PIE::Evaluator->new();
-$eval10->set_named( 'match-regexp' => $MATCH_REGEX );
+$eval10->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 $eval10->apply_script(
     $builder->defun(

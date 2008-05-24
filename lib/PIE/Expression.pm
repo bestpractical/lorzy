@@ -32,7 +32,7 @@ has args => (
 
 sub evaluate {
     my ($self, $ev) = @_;
-    my $lambda = $ev->resolve_name($self->name);
+    my $lambda = $ev->resolve_symbol_name($self->name);
     die "Function ".$self->name." not defined"  unless $lambda;
     $ev->apply_script( $lambda, $self->args );
     return $ev->result->value;
@@ -151,7 +151,7 @@ has signature => (
 sub evaluate {
     my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
     my $symbol = $self->{'args'}->{'symbol'}->evaluate($eval);
-    my $result = $eval->resolve_name($symbol);
+    my $result = $eval->resolve_symbol_name($symbol);
     return $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
 }
 

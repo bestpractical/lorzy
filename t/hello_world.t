@@ -51,12 +51,12 @@ my $hello = Hello->new;
 isa_ok( $hello => 'Hello' );
 
 use PIE::Lambda::Native;
-$hello->evaluator->set_named( 'make-fred',
+$hello->evaluator->set_global_symbol( 'make-fred',
     PIE::Lambda::Native->new( body => sub { return 'fred' } ) );
-$hello->evaluator->set_named( 'make-bob',
+$hello->evaluator->set_global_symbol( 'make-bob',
     PIE::Lambda::Native->new( body => sub { return 'bob' } ) );
 
-$hello->evaluator->set_named(
+$hello->evaluator->set_global_symbol(
     'make-whoever',
     PIE::Lambda::Native->new(
         body => sub { my $args = shift; return $args->{'name'} },
@@ -106,7 +106,7 @@ isa_ok( $hello->rules->[0], 'PIE::Lambda' );
 isa_ok( $hello->rules->[1], 'PIE::Lambda' );
 is( $hello->run('jesse'), 'Hello fred' );
 
-$hello->rules( [ $hello->evaluator->get_named('make-whoever') ] );
+$hello->rules( [ $hello->evaluator->get_global_symbol('make-whoever') ] );
 isa_ok( $hello->rules->[0], 'PIE::Lambda' );
 is( $hello->run('jesse'), 'Hello jesse' );
 

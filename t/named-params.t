@@ -23,7 +23,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
 
 );
 my $eval5 = PIE::Evaluator->new;
-$eval5->set_named( 'match-regex' => $MATCH_REGEX );
+$eval5->set_global_symbol( 'match-regex' => $MATCH_REGEX );
 
 my $match_p = PIE::Expression->new(
         name => 'match-regex',
@@ -40,7 +40,7 @@ is( $eval5->result->value, 1 );
 
 my $eval6 = PIE::Evaluator->new();
 
-$eval6->set_named( 'match-regex' => $MATCH_REGEX );
+$eval6->set_global_symbol( 'match-regex' => $MATCH_REGEX );
 
 my $match_fail_p = PIE::Expression->new(
         name => 'match-regex',

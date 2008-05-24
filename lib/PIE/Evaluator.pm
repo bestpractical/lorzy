@@ -11,14 +11,14 @@ has result => (
     default => sub { return PIE::EvaluatorResult->new()}
     );
     
-has named => (
+has global_symbols => (
              metaclass => 'Collection::Hash',
              is        => 'rw',
              default   => sub { {} },
              isa => 'HashRef',
              provides  => {
-                 get       => 'get_named',
-                 set       => 'set_named',
+                 get       => 'get_global_symbol',
+                 set       => 'set_global_symbol',
              });
 
 has stack_vars => (
@@ -82,11 +82,11 @@ sub run {
 sub trace{}
 
 
-sub resolve_name {
+sub resolve_symbol_name {
     my ($self, $name) = @_;
     my $stack = $self->stack_vars->[-1] || {};
     Carp::cluck if ref($name);
-    $stack->{$name} || $self->get_named($name) || die "Could not find symbol $name in the current lexical context.";
+    $stack->{$name} || $self->get_global_symbol($name) || die "Could not find symbol $name in the current lexical context.";
 }
 
 sub apply_script {
