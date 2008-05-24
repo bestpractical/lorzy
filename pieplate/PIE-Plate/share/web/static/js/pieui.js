@@ -1,6 +1,9 @@
 
 function lorzy_show_expression_str(str, parent) {
-    parent.createAppend('span', { className: 'lorzy-const string' }, [ str ]);
+    var el = parent.createAppend('span', { className: 'lorzy-const string' });
+    el.html(str)
+      .editable(function(value, settings) { alert('yatta'); return value},
+                { submit: 'OK' } );
 }
 
 function lorzy_show_expression(parent) {
@@ -9,8 +12,8 @@ function lorzy_show_expression(parent) {
     ret.addClass('lorzy-code');
     var that = this;
     jQuery(ret)
-      .html(this.name+': '+this.toString() )
-      .click(function () { alert (that.name) });
+    .html(this.name+': '+this.toString() );
+//      .click(function () { alert (that.name) });
 
     jQuery.each(this.args, function(name, exp) {
         console.log(name +  ": "+exp);

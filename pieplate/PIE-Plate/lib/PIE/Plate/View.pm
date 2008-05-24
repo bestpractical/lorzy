@@ -28,7 +28,7 @@ my $json_text   = JSON->new->encode($ops);
 
 outs_raw(qq{<script type="text/javascript">
 
-lorzy_show($json_text);
+jQuery(lorzy_show($json_text));
 
 </script>});
 
