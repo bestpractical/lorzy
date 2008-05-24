@@ -3,7 +3,9 @@ function lorzy_show_expression_str(str, parent) {
     var el = parent.createAppend('span', { className: 'lorzy-const string' });
     el.html(str)
       .editable(function(value, settings) { return value},
-                { submit: 'OK' } );
+                { submit: 'OK',
+                  width: '80%',
+                  } );
 }
 
 function lorzy_show_expression(parent, add_event) {

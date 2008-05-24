@@ -1,20 +1,42 @@
-div.lorzy-code-arg {
+
+#wrapper div.lorzy-code>.name:before {
+    content: 'code: ';
+
+}
+    
+#wrapper div.lorzy-code-arg {
+    
   color: green;
 }
 
-span.lorzy-const {
+#wrapper div.lorzy-code-arg>.name:before{
+    content: 'arg: ';
+}
+
+#wrapper span.lorzy-const {
   color: black;
 }
 
-div.selected {
-  border: 1px solid #ff0000;
+#wrapper span.lorzy-const:before {
+    content: "constant: ";
 }
 
-div.hover {
-  border: 1px solid #990000;
+
+#wrapper div {
+    padding: 0.25em;
+    -moz-border-radius: 5px;
+ /*border: 1px solid #ffffff; */
 }
 
-div.lorzy-code {
+#wrapper div.selected {
+   background: #cca;
+}
+
+#wrapper div.hover {
+    background: #ffc;
+}
+
+#wrapper div.lorzy-code {
   width: 300px;
   color: blue;
 }
