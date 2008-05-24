@@ -53,16 +53,7 @@ function lorzy_generate_struct(parent) {
 
       var ops = jQuery(parent).children();
      var tree=    jQuery.map(ops, function (op) {
-
-            if( jQuery(op).hasClass('lorzy-code')) {
-                
-                var codeargs =  jQuery(op).children('.lorzy-code-args').children();
-                return { 'name': jQuery(op).children('.name').text(), 'args': lorzy_generate_args_struct(codeargs)  };
-            } else if (jQuery(op).hasClass('lorzy-const')) {
-               return jQuery(op).text();
-            }else  {
-                    console.log('dunno what to do with' + jQuery(op).content);
-            }
+            return lorzy_generate_op(jQuery(op));
        }
 
         );
@@ -74,13 +65,26 @@ function lorzy_generate_struct(parent) {
 };
 
 
+function lorzy_generate_op (op) {
+    
+            if( op.hasClass('lorzy-code')) {
+                
+                var codeargs =  op.children('.lorzy-code-args').children();
+                return { 'name': op.children('.name').text(), 'args': lorzy_generate_args_struct(codeargs)  };
+            } else if (op.hasClass('lorzy-const')) {            
+               return op.text();
+            }else  { 
+            console.log("failed to find a class on " +op.attr('class'));
+            }
+}
 
 
 function lorzy_generate_args_struct(args) {
     var myArray = {};
-     jQuery.map(args, function (op)  {
-               myArray[ jQuery(op).children('.name').text() ] =  lorzy_generate_struct(jQuery(op).children('.value').get(0));
+     jQuery.map(args, function (op)  {  
+               myArray[ jQuery(op).children('.name').text() ] =  lorzy_generate_op(jQuery(op).children('.value').children());
     });
+
 
     return myArray;
 }
