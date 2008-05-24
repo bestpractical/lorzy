@@ -1,11 +1,12 @@
 
 function lorzy_show_expression_str(str, parent) {
-    parent.createAppend('span', { className: 'string' }, [ str ]);
+    parent.createAppend('span', { className: 'lorzy-const string' }, [ str ]);
 }
 
 function lorzy_show_expression(parent) {
 
     var ret = parent.createAppend('div', { className: this.name });
+    ret.addClass('lorzy-code');
     var that = this;
     jQuery(ret)
       .html(this.name+': '+this.toString() )
@@ -14,6 +15,7 @@ function lorzy_show_expression(parent) {
     jQuery.each(this.args, function(name, exp) {
         console.log(name +  ": "+exp);
         var entry = ret.createAppend('div', { className: that.name+' '+name });
+        entry.addClass('lorzy-code-arg');
         jQuery(entry).html(name);
         if (typeof(exp) == 'string') {
             lorzy_show_expression_str(exp, entry);

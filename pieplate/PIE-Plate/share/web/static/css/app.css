@@ -1,0 +1,11 @@
+div.lorzy-code {
+  color: blue;
+};
+
+div.lorzy-code-arg {
+  color: green;
+};
+
+span.lorzy-const {
+  color: black;
+};
