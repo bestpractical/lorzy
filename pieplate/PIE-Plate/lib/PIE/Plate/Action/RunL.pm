@@ -21,7 +21,7 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg = $args->{'tested-string'};
-        my $regex = $args->{'regex'};
+        my $regex = $args->{'regexp'};
 
         return $arg =~ m/$regex/;
     },
