@@ -13,6 +13,9 @@ sub build_op_expression {
     $class->require;
     $class = "PIE::Expression" unless $class->can('meta');
 
+    # XXX: in case of primitive-ops, we should only bulid the args we
+    # know about
+
     return $class->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
 
 }

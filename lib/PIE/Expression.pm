@@ -23,14 +23,6 @@ has args => (
     default => sub { {} },
     isa => 'HashRef[PIE::Expression]');
 
-#Attribute (args) does not pass the type constraint because: Validation failed for 'HashRef[PIE::FunctionArgument]' failed with value HASH(0x9a979c) at /opt/local/lib/perl5/site_perl/5.8.8/Moose/Meta/Attribute.pm line 340
-
-# (foo bar (orz 1 ))
-# === (eval 'foo bar (orz 1))
-# === (apply foo ((bar (orz 1))
-
-
-
 sub evaluate {
     my ($self, $ev) = @_;
     my $lambda = $ev->resolve_symbol_name($self->name);
@@ -54,12 +46,14 @@ sub evaluate {
     return ! $self->SUPER::evaluate();
 
 }
+
 package PIE::Expression::IfThen;
 use Moose;
 extends 'PIE::Expression';
 use Params::Validate qw/validate_pos/;
+use MooseX::ClassAttribute;
 
-has signature => (
+class_has signature => (
     is      => 'ro',
     default => sub {
          {
@@ -93,8 +87,9 @@ package PIE::Expression::String;
 use Moose;
 extends 'PIE::Expression';
 use Params::Validate qw/validate_pos/;
+use MooseX::ClassAttribute;
 
-has signature => (
+class_has signature => (
     is      => 'ro',
     default => sub {
         { value => PIE::FunctionArgument->new( name => 'value', type => 'Str' )
@@ -143,8 +138,9 @@ package PIE::Expression::Symbol;
 use Moose;
 extends 'PIE::Expression';
 use Params::Validate qw/validate_pos/;
+use MooseX::ClassAttribute;
 
-has signature => (
+class_has signature => (
     is => 'ro',
     default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
     
@@ -155,6 +151,8 @@ sub evaluate {
     my $result = $eval->resolve_symbol_name($symbol);
     return $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
 }
+
+package PIE::Expression::Let;
 
 1;
 
