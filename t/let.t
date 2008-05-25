@@ -58,11 +58,10 @@ is(scalar @{$script->progn->nodes->[0]->nodes}, 1);
 ok(exists $script->progn->nodes->[0]->bindings->{REGEXP});
 isa_ok($script->progn->nodes->[0]->bindings->{REGEXP}, 'PIE::Expression');
 
-TODO: {
-    local $TODO = 'lexical loopup in outter blocks';
+
 lives_ok {
-$eval->apply_script( $script, { 'tested-string', 'you do love software' } );
+    $eval->apply_script( $script, { 'tested-string', 'you do love software' } );
 };
 ok( $eval->result->success, $eval->result->error );
 is( $eval->result->value, 'hate' );
-};
+

@@ -13,6 +13,7 @@ has progn => (
 
 has signature => (
     is => 'rw',
+    default => sub { {} },
     isa => 'HashRef[PIE::FunctionArgument]');
 
 sub check_args {
@@ -58,7 +59,7 @@ sub apply {
 
     $self->validate_args_or_die($args);
 
-    $evaluator->enter_stack_frame( args => $args);
+    $evaluator->enter_stack_frame( args => $args, block => $self );
     my $res = $self->progn->evaluate($evaluator);
 
     $evaluator->leave_stack_frame(); 

@@ -156,13 +156,12 @@ use MooseX::ClassAttribute;
 class_has signature => (
     is => 'ro',
     default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
-    
-    
+
 sub evaluate {
     my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
     my $symbol = $self->{'args'}->{'symbol'}->evaluate($eval);
     my $result = $eval->resolve_symbol_name($symbol);
-    return $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
+    return ref($result) && $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
 }
 
 package PIE::Expression::Let;
@@ -186,7 +185,7 @@ has lambda => (
             progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
             signature => $self->mk_signature,
             block_id => $self->block_id,
-            outter_scope => $self->outter_scope,
+            outter_block => $self->outter_block,
         );
     },
 );
@@ -209,9 +208,7 @@ sub mk_signature {
 
 sub evaluate {
     my ($self, $evaluator) = @_;
-    $evaluator->apply_script( $self->lambda, $self->bindings );
-
+    $self->lambda->apply( $evaluator, $self->bindings );
 }
 
 1;
-

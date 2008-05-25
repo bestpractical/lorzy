@@ -10,7 +10,7 @@ has result => (
     isa => 'PIE::EvaluatorResult',
     default => sub { return PIE::EvaluatorResult->new()}
     );
-    
+
 has global_symbols => (
              metaclass => 'Collection::Hash',
              is        => 'rw',
@@ -20,6 +20,12 @@ has global_symbols => (
                  get       => 'get_global_symbol',
                  set       => 'set_global_symbol',
              });
+
+has lex_block_map => (
+                     is => 'rw',
+                     isa => 'HashRef[ArrayRef[Num]]',
+                     default => sub { {} },
+);
 
 has stack_vars => (
     is => 'rw',
@@ -32,6 +38,17 @@ has stack_vars => (
     }
 );
 
+has stack_block => (
+    is => 'rw',
+    metaclass => 'Collection::Array',
+    isa       => 'ArrayRef[PIE::Block]',
+    default   => sub { [] },
+    provides  => {
+        'push' => 'push_stack_block',
+        'pop'  => 'pop_stack_block',
+    }
+);
+
 has stack_depth => ( 
             is => 'rw',
             isa => 'Int',
@@ -41,17 +58,23 @@ has stack_depth => (
 
 sub enter_stack_frame {
     my $self = shift;
-    my %args = validate(@_, {args => 1});
+    my %args = validate(@_, {args => 1, block => 1});
 
     $self->stack_depth($self->stack_depth+1);
     $self->push_stack_vars($args{'args'});
+    $self->push_stack_block($args{'block'});
+
+    push @{ $self->lex_block_map->{ $args{'block'}->block_id } ||= [] }, $#{ $self->stack_vars };
 }
 
 sub leave_stack_frame {
     my $self = shift;
     die "Trying to leave stack frame 0. Too many returns. Something relaly bad happened" if ($self->stack_depth == 0);
     $self->pop_stack_vars();
+    my $block = $self->pop_stack_block();
     $self->stack_depth($self->stack_depth-1);
+
+    pop @{ $self->lex_block_map->{ $block->block_id } };
 }
 
 sub run {
@@ -75,11 +98,26 @@ sub run {
     return $self->result->success;
 }
 
+sub lookup_lex_name {
+    my ($self, $name) = @_;
+
+    return unless @{ $self->stack_block };
+
+    my $block = $self->stack_block->[-1];
+    do {
+        my $stack = $self->stack_vars->[ $self->lex_block_map->{ $block->block_id }[-1] ];
+        return $stack->{$name} if exists $stack->{$name};
+    } while ($block = $block->outter_block);
+
+    return;
+}
+
 sub resolve_symbol_name {
     my ($self, $name) = @_;
     my $stack = $self->stack_vars->[-1] || {};
     Carp::cluck if ref($name);
-    $stack->{$name} || $self->get_global_symbol($name) || die "Could not find symbol $name in the current lexical context.";
+    $stack->{$name} || $self->lookup_lex_name($name) || $self->get_global_symbol($name)
+        || die "Could not find symbol $name in the current lexical context.";
 }
 
 sub apply_script {
@@ -92,7 +130,8 @@ sub apply_script {
         { ISA => "HASHREF" }
     );
     Carp::confess unless($lambda);
-    my $ret = $lambda->apply( $self => $args);
+#    Carp::cluck Dumper($lambda); use Data::Dumper;
+    my $ret = $lambda->apply( $self => $args );
     $self->result->value($ret);
     $self->result->success(1);
     return $self->result->value;
