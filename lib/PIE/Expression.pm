@@ -33,8 +33,11 @@ sub evaluate {
 
 package PIE::Expression::True;
 use Moose;
+use MooseX::ClassAttribute;
 
 extends 'PIE::Expression';
+
+class_has signature => ( is => 'ro', default => sub { { }});
 sub evaluate {1}
 
 package PIE::Expression::False;
@@ -116,10 +119,12 @@ sub evaluate {
 }
 
 package PIE::Expression::ProgN;
+use MooseX::ClassAttribute;
 use Moose;
 extends 'PIE::Expression';
+class_has signature => ( is => 'ro', default => sub { { }});
 
-has nodes => (
+    has nodes => (
     is => 'rw',
     isa => 'ArrayRef',
 );

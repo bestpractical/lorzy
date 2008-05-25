@@ -98,34 +98,61 @@ sub apply_script {
     return $self->result->value;
 }
 
-sub builtin_signatures {
+sub core_expression_signatures {
     my $self = shift;
     my %signatures;
-    foreach my $builtin ( $self->_enumerate_builtins() ) {
-        my $sig = $self->_serialize_builtin_signature($builtin);
-        $signatures{$builtin} =  $sig;
+    foreach my $core_expression ( $self->_enumerate_core_expressions() ) {
+        my $sig = $self->_flatten_core_expression_signature($core_expression);
+        $signatures{$core_expression} =  $sig;
     }
 
     return \%signatures;
 }
 
-sub _enumerate_builtins {
+sub _enumerate_core_expressions {
     my $self = shift;
     no strict 'refs';
     use PIE::Expression;
-    my @builtins
+    my @core_expressions
         = grep { $_ && $_->isa('PIE::Expression') }
         map { /^(.*)::$/ ? 'PIE::Expression::' . $1 : '' }
         keys %{'PIE::Expression::'};
-    return @builtins;
+    return @core_expressions;
 }
 
 
-sub _serialize_builtin_signature {
+sub _flatten_core_expression_signature {
     my $self    = shift;
-    my $builtin = shift;
-    my $signature = $builtin->new->signature;
+    my $core_expression = shift;
+    my $signature = $core_expression->signature;
     return { map { $_->name =>  {type => $_->type}}   values %$signature};
+
+}
+
+sub symbol_signatures {
+    my $self = shift;
+    my %signatures;
+    foreach my $symbol ($self->_enumerate_symbols()) {
+        $signatures{$symbol} = $self->_flatten_symbol_signature( $symbol)
+    }
+    return \%signatures;
+}
+
+sub _enumerate_symbols() {
+    my $self = shift;
+    return keys %{$self->global_symbols};
+}
+
+
+sub _flatten_symbol_signature {
+    my $self = shift;
+    my $sym = shift;
+
+    my $x = $self->resolve_symbol_name($sym);
+    my $signature = $x->signature;
+    return { map { $_->name =>  {type => $_->type}}   values %$signature};
+    
+
 
 }
 

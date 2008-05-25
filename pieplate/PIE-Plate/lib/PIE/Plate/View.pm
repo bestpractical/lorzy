@@ -28,13 +28,31 @@ my $ops = [
 my $json_text   = JSON->new->encode($ops);
 
 my $evaluator = PIE::Evaluator->new();
+my $MATCH_REGEX = PIE::Lambda::Native->new(
+    body => sub {
+        my $args = shift;
+        my $arg    = $args->{'tested-string'};
+        my $regexp = $args->{'regexp'};
+        return ($arg =~ m/$regexp/ )? 1 : 0;
+    },
 
-my $signatures_json = JSON->new->encode(    $evaluator->builtin_signatures());
+    signature => {
+        'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
+        'regexp' => PIE::FunctionArgument->new( name => 'regexp', type => 'Str' )
+        }
 
+);
+
+$evaluator->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
+
+
+my $signatures_json = JSON->new->encode(    $evaluator->core_expression_signatures());
+my $symbol_sigs = JSON->new->encode($evaluator->symbol_signatures());
 
 outs_raw(qq{<script type="text/javascript">
 
-var builtins = $signatures_json;
+var core_expressions = $signatures_json;
+var symbols = $symbol_sigs;
 
 jQuery(lorzy_show($json_text));
 

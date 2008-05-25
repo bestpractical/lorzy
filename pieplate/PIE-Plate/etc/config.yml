@@ -41,8 +41,8 @@ framework:
     - 
       OnlineDocs: {}
 
-    - 
-      CompressedCSSandJS: {}
+#    - 
+#      CompressedCSSandJS: {}
 
     - 
       AdminUI: {}
