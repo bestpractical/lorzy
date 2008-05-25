@@ -1,10 +1,11 @@
-use Test::More qw'no_plan';
+use Test::More tests => 13;
 use strict;
 use_ok('PIE::Expression');
 use_ok('PIE::Evaluator');
 use_ok('PIE::Builder');
 use_ok('PIE::Lambda::Native');
 use_ok('PIE::FunctionArgument');
+use Test::Exception;
 
 my $MATCH_REGEX = PIE::Lambda::Native->new(
     body => sub {
@@ -40,7 +41,8 @@ my $script =
                                 name => 'match-regexp',
                                 args => {
                                     regexp => { name => 'Symbol', args => { symbol => 'REGEXP' } },
-                                    'tested-string' => { name => 'Symbol', args => { symbol => 'tested-string' } },
+                                    'tested-string' => 
+                                         { name => 'Symbol', args => { symbol => 'tested-string' } },
                                     }
                                 }
                             }
@@ -56,3 +58,11 @@ is(scalar @{$script->progn->nodes->[0]->nodes}, 1);
 ok(exists $script->progn->nodes->[0]->bindings->{REGEXP});
 isa_ok($script->progn->nodes->[0]->bindings->{REGEXP}, 'PIE::Expression');
 
+TODO: {
+    local $TODO = 'lexical loopup in outter blocks';
+lives_ok {
+$eval->apply_script( $script, { 'tested-string', 'you do love software' } );
+};
+ok( $eval->result->success, $eval->result->error );
+is( $eval->result->value, 'hate' );
+};

@@ -187,7 +187,19 @@ sub BUILD {
 
 }
 
+sub mk_signature {
+    my $self = shift;
+    return { map { $_ => PIE::FunctionArgument->new( name => $_, type => 'Str') } keys %{ $self->bindings } };
+}
+
 sub evaluate {
+    my ($self, $evaluator) = @_;
+    $evaluator->apply_script(
+        PIE::Lambda->new(
+            progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
+            signature => $self->mk_signature,
+        ),
+        $self->bindings );
 
 }
 
