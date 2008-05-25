@@ -30,7 +30,6 @@ sub evaluate {
     return $ev->result->value;
 }
 
-
 package PIE::Expression::True;
 use Moose;
 use MooseX::ClassAttribute;
@@ -177,6 +176,21 @@ has bindings => (
     default => sub { { } },
 );
 
+has lambda => (
+    is => 'ro',
+    isa => 'PIE::Lambda',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        PIE::Lambda->new(
+            progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
+            signature => $self->mk_signature,
+            block_id => $self->block_id,
+            outter_scope => $self->outter_scope,
+        );
+    },
+);
+
 sub BUILD {
     my ($self, $params) = @_;
 
@@ -195,12 +209,7 @@ sub mk_signature {
 
 sub evaluate {
     my ($self, $evaluator) = @_;
-    $evaluator->apply_script(
-        PIE::Lambda->new(
-            progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
-            signature => $self->mk_signature,
-        ),
-        $self->bindings );
+    $evaluator->apply_script( $self->lambda, $self->bindings );
 
 }
 
