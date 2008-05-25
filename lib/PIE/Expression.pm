@@ -167,6 +167,29 @@ sub evaluate {
 }
 
 package PIE::Expression::Let;
+use Moose;
+extends 'PIE::Expression::ProgN';
+
+has bindings => (
+    is => 'rw',
+    isa => 'HashRef',
+    default => sub { { } },
+);
+
+sub BUILD {
+    my ($self, $params) = @_;
+
+    return unless $params->{builder};
+    my $bindings = $params->{builder_args}{bindings};
+
+    $self->bindings->{$_} = $params->{builder}->build_expression($bindings->{$_})
+        for keys %$bindings;
+
+}
+
+sub evaluate {
+
+}
 
 1;
 

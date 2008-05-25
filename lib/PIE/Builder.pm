@@ -16,7 +16,6 @@ sub build_op_expression {
     # XXX: in case of primitive-ops, we should only bulid the args we
     # know about
 
-    warn "==> orz $class";
     my @known_args = $class eq 'PIE::Expression' ? keys %$args : keys %{ $class->signature };
     return $class->new( name => $name, builder => $self, builder_args => $args,
                         args => { map { $_ => $self->build_expression( $args->{$_} ) } @known_args } );
