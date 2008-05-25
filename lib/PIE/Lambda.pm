@@ -2,6 +2,8 @@
 package PIE::Lambda;
 use Moose; use MooseX::Params::Validate;
 
+with 'PIE::Block';
+
 has progn => (
     is => 'ro',
     isa => 'PIE::Expression::ProgN',
@@ -53,7 +55,6 @@ sub validate_args_or_die {
 
 sub apply {
     my ($self, $evaluator, $args) = @_;
-
 
     $self->validate_args_or_die($args);
 

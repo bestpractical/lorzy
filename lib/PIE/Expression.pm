@@ -169,6 +169,7 @@ sub evaluate {
 package PIE::Expression::Let;
 use Moose;
 extends 'PIE::Expression::ProgN';
+with 'PIE::Block';
 
 has bindings => (
     is => 'rw',
