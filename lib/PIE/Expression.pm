@@ -124,10 +124,19 @@ use Moose;
 extends 'PIE::Expression';
 class_has signature => ( is => 'ro', default => sub { { }});
 
-    has nodes => (
+has nodes => (
     is => 'rw',
     isa => 'ArrayRef',
 );
+
+sub BUILD {
+    my ($self, $params) = @_;
+
+    return unless $params->{builder};
+    my $nodes = $params->{builder_args}{nodes};
+
+    $self->nodes( [ map { $params->{builder}->build_expression($_) } @$nodes ] );
+}
 
 sub evaluate {
     my ($self, $evaluator) = @_;

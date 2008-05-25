@@ -16,7 +16,10 @@ sub build_op_expression {
     # XXX: in case of primitive-ops, we should only bulid the args we
     # know about
 
-    return $class->new( name => $name, args => { map { $_ => $self->build_expression( $args->{$_} ) } keys %$args } );
+    warn "==> orz $class";
+    my @known_args = $class eq 'PIE::Expression' ? keys %$args : keys %{ $class->signature };
+    return $class->new( name => $name, builder => $self, builder_args => $args,
+                        args => { map { $_ => $self->build_expression( $args->{$_} ) } @known_args } );
 
 }
 
@@ -28,7 +31,7 @@ sub build_expression {
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
     } else {
-        Carp::confess("Don't know what to do with a tree that looksl ike ". YAML::Dump($tree));
+        Carp::confess("Don't know what to do with a tree that looksl ike ". YAML::Dump($tree));use YAML;
     }
 }
 
