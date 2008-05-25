@@ -21,9 +21,25 @@ my $script = $builder->defun(
 
 #warn Dumper($script);use Data::Dumper;
 # XXX: ensure $script structure
-is(scalar @{$script->progn->nodes}, 1);
-isa_ok($script->progn->nodes->[0], 'PIE::Expression::ProgN');
-is(scalar @{$script->progn->nodes->[0]->nodes}, 2);
+use Data::Dumper;
+is_deeply($script->progn->nodes, 
+        [ 
+          bless( {
+                   'signature' => {},
+                   'name' => 'ProgN',
+                   'args' => {},
+                   'nodes' => [
+                                bless( {
+                                         'signature' => {},
+                                         'name' => 'True',
+                                         'args' => {}
+                                       }, 'PIE::Expression::True' ),
+                                bless( {
+                                         'signature' => {},
+                                         'name' => 'False',
+                                         'args' => {}
+                                       }, 'PIE::Expression::False' )
+                              ]
+                 }, 'PIE::Expression::ProgN' )
 
-isa_ok($script->progn->nodes->[0]->nodes->[0], 'PIE::Expression::True');
-isa_ok($script->progn->nodes->[0]->nodes->[1], 'PIE::Expression::False');
+        ]                );
