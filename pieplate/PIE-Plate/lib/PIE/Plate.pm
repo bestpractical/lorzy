@@ -6,6 +6,9 @@ Jifty->web->add_javascript(
         jquery.dimensions.js
         jquery.ui-1.5b4/ui.core.js
         jquery.ui-1.5b4/ui.sortable.js
+        jquery.ui-1.5b4/ui.selectable.js
+        jquery.ui-1.5b4/ui.draggable.js
+        jquery.ui-1.5b4/ui.droppable.js
         pieui.js ));
 
 
