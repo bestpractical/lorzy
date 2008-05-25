@@ -98,4 +98,35 @@ sub apply_script {
     return $self->result->value;
 }
 
+sub builtin_signatures {
+    my $self = shift;
+    my %signatures;
+    foreach my $builtin ( $self->_enumerate_builtins() ) {
+        my $sig = $self->_serialize_builtin_signature($builtin);
+        $signatures{$builtin} =  $sig;
+    }
+
+    return \%signatures;
+}
+
+sub _enumerate_builtins {
+    my $self = shift;
+    no strict 'refs';
+    use PIE::Expression;
+    my @builtins
+        = grep { $_ && $_->isa('PIE::Expression') }
+        map { /^(.*)::$/ ? 'PIE::Expression::' . $1 : '' }
+        keys %{'PIE::Expression::'};
+    return @builtins;
+}
+
+
+sub _serialize_builtin_signature {
+    my $self    = shift;
+    my $builtin = shift;
+    my $signature = $builtin->new->signature;
+    return { map { $_->name =>  {type => $_->type}}   values %$signature};
+
+}
+
 1;

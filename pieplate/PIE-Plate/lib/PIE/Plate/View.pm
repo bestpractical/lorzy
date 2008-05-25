@@ -1,3 +1,5 @@
+use warnings;
+use strict;
 package PIE::Plate::View;
 use Jifty::View::Declare -base;
 use JSON;
@@ -25,8 +27,14 @@ my $ops = [
 
 my $json_text   = JSON->new->encode($ops);
 
+my $evaluator = PIE::Evaluator->new();
+
+my $signatures_json = JSON->new->encode(    $evaluator->builtin_signatures());
+
 
 outs_raw(qq{<script type="text/javascript">
+
+var builtins = $signatures_json;
 
 jQuery(lorzy_show($json_text));
 

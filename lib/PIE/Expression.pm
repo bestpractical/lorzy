@@ -1,5 +1,6 @@
 
 package PIE::Expression;
+use PIE::FunctionArgument;
 use Moose;
 
 with 'PIE::Evaluatable';    
@@ -53,24 +54,6 @@ sub evaluate {
     return ! $self->SUPER::evaluate();
 
 }
-
-package PIE::Expression::Loop;
-use Moose;
-extends 'PIE::Expression';
-
-has signature => (
-    is => 'ro',
-    default => sub {  items => PIE::FunctionArgument->new(name => 'items', type => 'ArrayRef[PIE::Evaluatable]'),
-                      block => PIE::FunctionARgument->new(name => 'block', type => 'PIE::Evaluatable')}
-
-);
-
-
-sub evaluate {
-    my $self = shift;
-
-}
-
 package PIE::Expression::IfThen;
 use Moose;
 extends 'PIE::Expression';
@@ -82,14 +65,14 @@ has signature => (
          {
             condition => PIE::FunctionArgument->new(
                 name => 'condition',
-                isa  => 'PIE::Evaluatable'),
+                type  => 'PIE::Evaluatable'),
 
             if_true => PIE::FunctionArgument->new(
                 name => 'if_true',
-                isa  => 'PIE::Evaluatable'),
+                type  => 'PIE::Evaluatable'),
            if_false => PIE::FunctionArgument->new(
                 name => 'if_false',
-                isa  => 'PIE::Evaluatable'
+                type  => 'PIE::Evaluatable'
                 )
             }
     }
