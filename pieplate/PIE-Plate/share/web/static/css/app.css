@@ -1,4 +1,23 @@
 
+.droppable-active {
+       border: 2px solid red;
+
+}
+
+.droppable-hover {
+        background: #f22;
+        min-height: 3em;
+}
+
+draggable-active {
+        color: #66f;
+}
+
+.lorzy-expression {
+    border: 2px solid #666;
+    
+}
+
 #wrapper div.lorzy-code>.name:before {
     content: 'code: ';
 
