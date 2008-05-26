@@ -1,5 +1,5 @@
 
-     var lorzy_draggable_opts = { snap: true, revert: true, activeClass: 'draggable-active', opacity: '0.80'};
+     var lorzy_draggable_opts = { revert: true, activeClass: 'draggable-active', opacity: '0.80'};
 var droppable_args = {
             accept: '.lorzy-expression',
             greedy: 'true',
@@ -15,7 +15,7 @@ var droppable_args = {
                     newitem.draggable(lorzy_draggable_opts);
                     newitem.droppable(lorzy_draggable_opts);
                     newitem.attr({style: 'display: block'});
-                    jQuery(this).replaceWith(newitem);
+                    newitem.insertAfter(this);
                    lorzy_wrap_in_drop_targets(newitem);
 }};
 function lorzy_make_empty_drop_target (){
