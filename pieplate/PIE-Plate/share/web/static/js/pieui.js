@@ -10,8 +10,11 @@ var droppable_args = {
             drop: function(ev, ui) { 
                     var newitem = jQuery(ui.draggable).clone();
                       var orig = jQuery(ui.draggable); 
+                      if (!orig.parent().hasClass('library')) {
                     orig.replaceWith(lorzy_make_empty_drop_target());
                     orig.droppable(droppable_args);
+
+                    }
                     newitem.draggable(lorzy_draggable_opts);
                     newitem.droppable(lorzy_draggable_opts);
                     newitem.attr({style: 'display: block'});
@@ -20,21 +23,6 @@ var droppable_args = {
 }};
 
 
-var library_drop_args = {
-            accept: '.library .lorzy-expression',
-            greedy: 'true',
-            hover: 'pointer',
-            activeClass: 'droppable-active',
-            hoverClass: 'droppable-hover',
-            tolerance: 'pointer',
-            drop: function(ev, ui) { 
-                    var newitem = jQuery(ui.draggable).clone();
-                    newitem.draggable(lorzy_draggable_opts);
-                    newitem.droppable(lorzy_draggable_opts);
-                    newitem.attr({style: 'display: block'});
-                    newitem.insertAfter(this);
-                   lorzy_wrap_in_drop_targets(newitem);
-}};
 
 
 
@@ -155,8 +143,7 @@ function lorzy_show(ops) {
     jQuery('#wrapper').after(jQuery('<a>Traverse</a>').attr('id', 'clicky'));
     jQuery('#wrapper').after(jQuery('<a>Test</a>').attr('id', 'testy'));
 
-jQuery('.lorzy-expression, .lorzy-target').droppable(droppable_args);
-jQuery('.lorzy-expression, .lorzy-target').droppable(library_drop_args);
+jQuery('#wrapper .lorzy-expression, #wrapper .lorzy-target').droppable(droppable_args);
 
     jQuery('#testy').click(function () {
         jQuery.ajax({
