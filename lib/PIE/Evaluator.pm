@@ -183,8 +183,6 @@ sub _flatten_symbol_signature {
     my $x = $self->resolve_symbol_name($sym);
     my $signature = $x->signature;
     return { map { $_->name =>  {type => $_->type}}   values %$signature};
-    
-
 
 }
 

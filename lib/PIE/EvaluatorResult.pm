@@ -1,4 +1,3 @@
-
 package PIE::EvaluatorResult;
 use Moose;
 
@@ -15,7 +14,7 @@ has error => (
 
 has value => ( 
     is => 'rw',
-    isa => 'Str | Undef',
+#    isa => 'Str | Undef | PIE::EvaluatorResult::RunTime',
     required => 0
     );
 

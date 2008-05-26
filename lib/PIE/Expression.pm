@@ -164,6 +164,57 @@ sub evaluate {
     return ref($result) && $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
 }
 
+package PIE::Expression::List;
+use Moose;
+extends 'PIE::Expression::ProgN';
+
+sub evaluate {
+    my ($self, $evaluator) = @_;
+    return bless \$self->nodes, 'PIE::EvaluatorResult::RunTime';
+}
+
+package PIE::Expression::ForEach;
+use Moose;
+extends 'PIE::Expression';
+use MooseX::ClassAttribute;
+
+class_has signature => (
+    is => 'ro',
+    default => sub { { list => PIE::FunctionArgument->new( name => 'list'),
+                       binding => PIE::FunctionArgument->new( name => 'Str'),
+                       do => PIE::FunctionArgument->new( name => 'Str', type => 'PIE::Lambda'), # XXX: type for runtime?
+                   }});
+
+sub evaluate {
+    my ($self, $evaluator) = @_;
+    warn Dumper($self->args);use Data::Dumper;
+    my $lambda = $self->args->{do}->evaluate($evaluator);
+    die unless $lambda->isa("PIE::Lambda");
+
+    my $binding = $self->args->{binding}->evaluate($evaluator);
+    my $list = $self->args->{list}->evaluate($evaluator);
+
+    warn Dumper($list);
+    die unless ref($list) eq 'PIE::EvaluatorResult::RunTime';
+    my $nodes = $$list;
+
+    foreach (@$nodes) {
+        $lambda->apply($evaluator, { $binding => $_ });
+    }
+
+}
+
+package PIE::Expression::Symbol;
+use Moose;
+extends 'PIE::Expression';
+use Params::Validate qw/validate_pos/;
+use MooseX::ClassAttribute;
+
+class_has signature => (
+    is => 'ro',
+    default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
+
+
 package PIE::Expression::Let;
 use Moose;
 extends 'PIE::Expression::ProgN';
