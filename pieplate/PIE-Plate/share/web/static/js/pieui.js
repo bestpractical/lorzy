@@ -25,6 +25,23 @@ var droppable_args = {
 
 
 
+var trashable_args = {
+            accept: '#wrapper .lorzy-expression',
+            greedy: 'true',
+            hover: 'pointer',
+            activeClass: 'droppable-active',
+            hoverClass: 'droppable-hover',
+            tolerance: 'pointer',
+            drop: function(ev, ui) { 
+                      var orig = jQuery(ui.draggable); 
+                      if (!orig.parent().hasClass('library')) {
+                    orig.replaceWith(lorzy_make_empty_drop_target());
+                    orig.droppable(droppable_args);
+                   } 
+                    }
+};
+
+
 
 
 
@@ -143,7 +160,12 @@ function lorzy_show(ops) {
     jQuery('#wrapper').after(jQuery('<a>Traverse</a>').attr('id', 'clicky'));
     jQuery('#wrapper').after(jQuery('<a>Test</a>').attr('id', 'testy'));
 
+    jQuery('#wrapper').after(jQuery('<div>Trash</div>').attr('id', 'trashy'));
 jQuery('#wrapper .lorzy-expression, #wrapper .lorzy-target').droppable(droppable_args);
+
+    jQuery('#trashy').droppable(trashable_args);
+
+
 
     jQuery('#testy').click(function () {
         jQuery.ajax({

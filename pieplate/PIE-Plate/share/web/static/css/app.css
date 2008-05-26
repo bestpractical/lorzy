@@ -1,3 +1,18 @@
+
+#trashy {
+    display: block;
+    position: fixed;
+    top: 2em;
+    right:2em;
+    padding: 3em;
+    width: 5em;
+    border: 3px solid red;
+    -moz-border-radius: 0.5em;
+}
+
+
+
+
 .lorzy-expression, .lorzy-target {
         min-height: 1em;
        border: 2px solid #fff;
@@ -74,5 +89,4 @@ draggable-active {
     -khtml-opacity: 0.2;
     opacity: 0.2;
 }
-
 
