@@ -52,10 +52,7 @@ function lorzy_show_expression_str(str, parent) {
 function lorzy_show_expression(parent, add_event) {
 
     if( this.name == 'progn') {
-        jQuery.each(this.nodes, function () { lorzy_show_expression(parent);
-        //jQuery.each(this.nodes, function () { lorzy_show_expression.apply(this,[parent]);
-
-});
+        jQuery.each(this.nodes, function () { lorzy_show_expression(parent) });
 
         return;
     }
@@ -93,31 +90,7 @@ function lorzy_show_expression(parent, add_event) {
         }
     });
 
-        //lorzy_wrap_in_drop_targets(parent);
-
-    jQuery('div.lorzy-code > div.name', parent)
-    .click(function(e) {
-        jQuery('.selected').removeClass('selected');
-        jQuery(this).parent().addClass('selected') }
-          )
-    .hover(function(e) {
-        jQuery(this).parent().addClass('hover') },
-           function(e) {
-               jQuery(this).parent().removeClass('hover') });
-
-    jQuery('div.lorzy-code-arg > div.name', parent)
-    .click(function(e) {
-        jQuery('.selected').removeClass('selected');
-        jQuery(this).siblings('.value').addClass('selected') }
-          )
-    .hover(function(e) {
-        jQuery(this).siblings('.value').addClass('hover') },
-           function(e) {
-               jQuery(this).siblings('.value').removeClass('hover') });
-
-
 }
-var last_hate;
 function lorzy_show(ops) {
     jQuery(ops).each(
         function() {
@@ -131,10 +104,10 @@ function lorzy_show(ops) {
 
     jQuery('.lorzy-expression .lorzy-expression').draggable(lorzy_draggable_opts);
 
-    jQuery('#wrapper').after(jQuery('<a href="#">Remove</a>').attr('id', 'remove-entry'));
-    jQuery('#wrapper').after(jQuery('<a href="#">Add If</a>').attr('id', 'add-entry-if'));
-    jQuery('#wrapper').after(jQuery('<a href="#">Traverse</a>').attr('id', 'clicky'));
-    jQuery('#wrapper').after(jQuery('<a href="#">Test</a>').attr('id', 'testy'));
+    jQuery('#wrapper').after(jQuery('<a>Remove</a>').attr('id', 'remove-entry'));
+    jQuery('#wrapper').after(jQuery('<a>Add If</a>').attr('id', 'add-entry-if'));
+    jQuery('#wrapper').after(jQuery('<a>Traverse</a>').attr('id', 'clicky'));
+    jQuery('#wrapper').after(jQuery('<a>Test</a>').attr('id', 'testy'));
 
 jQuery('.lorzy-expression, .lorzy-target').droppable(droppable_args);
 
