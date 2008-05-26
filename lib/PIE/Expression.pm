@@ -187,14 +187,12 @@ class_has signature => (
 
 sub evaluate {
     my ($self, $evaluator) = @_;
-    warn Dumper($self->args);use Data::Dumper;
     my $lambda = $self->args->{do}->evaluate($evaluator);
     die unless $lambda->isa("PIE::Lambda");
 
     my $binding = $self->args->{binding}->evaluate($evaluator);
     my $list = $self->args->{list}->evaluate($evaluator);
 
-    warn Dumper($list);
     die unless ref($list) eq 'PIE::EvaluatorResult::RunTime';
     my $nodes = $$list;
 
