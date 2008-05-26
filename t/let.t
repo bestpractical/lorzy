@@ -27,9 +27,9 @@ my $eval = PIE::Evaluator->new();
 $eval->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 my $script =
-    $builder->defun(
+    $builder->defun( # outer block
     ops => [
-        { name => 'Let',
+        { name => 'Let', #inner block. each block has a lexical pad structure
             args => {
                 bindings => { REGEXP => 'software' },
                 nodes => [
@@ -42,7 +42,7 @@ my $script =
                                 args => {
                                     regexp => { name => 'Symbol', args => { symbol => 'REGEXP' } },
                                     'tested-string' => 
-                                         { name => 'Symbol', args => { symbol => 'tested-string' } },
+                                         { name => 'Symbol', args => { symbol => 'tested-string' } }, # lookup to tested string needs to query the outer block's lexpad
                                     }
                                 }
                             }
