@@ -52,7 +52,8 @@ function lorzy_show_expression_str(str, parent) {
 function lorzy_show_expression(parent, add_event) {
 
     if( this.name == 'progn') {
-        jQuery.each(this.nodes, function () { lorzy_show_expression.apply(this,[parent]);
+        jQuery.each(this.nodes, function () { lorzy_show_expression(parent);
+        //jQuery.each(this.nodes, function () { lorzy_show_expression.apply(this,[parent]);
 
 });
 
@@ -71,27 +72,28 @@ function lorzy_show_expression(parent, add_event) {
     var codeargs = jQuery(ret).createAppend('div', { className: 'lorzy-code-args'});
 
     jQuery.each(this.args, function(name, exp) {
-        console.log(name +  ": "+exp);
         var entry = codeargs.createAppend('div', { className: that.name+' '+name });
         entry.addClass('lorzy-code-arg');
         entry.createAppend('div', { className: 'name'}, [ name]);
-        var value = entry.createAppend('div', { className: 'value lorzy-expression'});
-        lorzy_wrap_in_drop_targets(value);
+        var value = entry.createAppend('div', { className: 'value'});
+        
         if (!exp)
             return;
         if (typeof(exp) == 'string') {
-            lorzy_show_expression_str(exp, value);
+        var valcontent= value.createAppend('div', { className: 'lorzy-expression'});
+            lorzy_wrap_in_drop_targets(valcontent);
+            lorzy_show_expression_str(exp, valcontent);
             return;
         } else {
 
-        var progn = value.createAppend('div', { className: 'lorzy-progn'});
+        //var progn = valcontent.createAppend('div', { className: 'lorzy-progn'});
 
-        lorzy_show_expression.apply(exp, [progn]); //[entry]);
+        lorzy_show_expression.apply(exp, [value]); //[entry]);
 
         }
     });
 
-        lorzy_wrap_in_drop_targets(parent);
+        //lorzy_wrap_in_drop_targets(parent);
 
     jQuery('div.lorzy-code > div.name', parent)
     .click(function(e) {
@@ -122,8 +124,8 @@ function lorzy_show(ops) {
             lorzy_show_expression.apply(this, [jQuery('#wrapper'), true]);
             
         });
-       // var tree = lorzy_generate_struct(jQuery('#wrapper'));
-        //console.log(tree.toJSON());
+       var tree = lorzy_generate_struct(jQuery('#wrapper'));
+        console.log(tree.toJSON());
 
 
 
@@ -185,11 +187,24 @@ jQuery('.lorzy-expression, .lorzy-target').droppable(droppable_args);
 function lorzy_generate_struct(parent) {
 
       var ops = jQuery(parent).children();
-     var tree=    jQuery.map(ops, function (op) {
-            return lorzy_generate_op(jQuery(op));
-       }
+     var tree=   jQuery.grep( 
+         
+     
+     jQuery.map(ops, function (op) {
+        return lorzy_generate_op(jQuery(op));
+        }
 
-        );
+        ),
+
+        function(element, index) {
+                if (element &&  (! jQuery(element).hasClass('lorzy-target'))) {
+                return true;
+                    } else {
+                return false;
+                }
+        }
+
+    );
    
     return tree;
 
@@ -199,27 +214,44 @@ function lorzy_generate_struct(parent) {
 
 
 function lorzy_generate_op (op) {
-    
-            if( op.hasClass('lorzy-code')) {
-                
+            if(op.hasClass('lorzy-target')) {
+            // it's nothing. skip it
+                return '';
+
+                }
+            if (op.hasClass('lorzy-const')) {            
+               return op.text();
+            } 
+           else if( op.hasClass('lorzy-expression')) {
                 var codeargs =  op.children('.lorzy-code-args').children();
                 return { 'name': op.children('.name').text(), 'args': lorzy_generate_args_struct(codeargs)  };
-            } else if (op.hasClass('lorzy-const')) {            
-               return op.text();
+            } 
+            
+            else if (op.hasClass('lorzy-progn')) {    
+                return { 'progn':  lorzy_generate_progn(op)}; 
             }else  { 
             console.log("failed to find a class on " +op.attr('class'));
             }
 }
 
+function lorzy_generate_progn(op) {
+        return lorzy_generate_struct(op);//.children('lorzy-expression'));
+
+}
+
 
 function lorzy_generate_args_struct(args) {
+
     var myArray = {};
      jQuery.map(args, function (op)  {  
-               var kids = lorzy_generate_struct(jQuery(op).children('.value'));
-               if (kids.length == 1) {
-                myArray[ jQuery(op).children('.name').text() ] =   kids[0] ;
+               var values =  lorzy_generate_struct(jQuery(op).children('.value'));
+               if (values.length < 1 ) {
+                    myArray[ jQuery(op).children('.name').text() ]= null;
+                }
+               else if (values.length == 1) {
+                myArray[ jQuery(op).children('.name').text() ] =   values[0] ;
                } else {
-                myArray[ jQuery(op).children('.name').text() ] =  { 'progn': kids} ;
+                myArray[ jQuery(op).children('.name').text() ] =  { 'progn': values} ;
                }
     });
 
