@@ -1,7 +1,7 @@
 
      var lorzy_draggable_opts = { revert: true, activeClass: 'draggable-active', opacity: '0.80'};
 var droppable_args = {
-            accept: '.lorzy-expression',
+            accept: '#wrapper .lorzy-expression',
             greedy: 'true',
             hover: 'pointer',
             activeClass: 'droppable-active',
@@ -18,6 +18,30 @@ var droppable_args = {
                     newitem.insertAfter(this);
                    lorzy_wrap_in_drop_targets(newitem);
 }};
+
+
+var library_drop_args = {
+            accept: '.library .lorzy-expression',
+            greedy: 'true',
+            hover: 'pointer',
+            activeClass: 'droppable-active',
+            hoverClass: 'droppable-hover',
+            tolerance: 'pointer',
+            drop: function(ev, ui) { 
+                    var newitem = jQuery(ui.draggable).clone();
+                    newitem.draggable(lorzy_draggable_opts);
+                    newitem.droppable(lorzy_draggable_opts);
+                    newitem.attr({style: 'display: block'});
+                    newitem.insertAfter(this);
+                   lorzy_wrap_in_drop_targets(newitem);
+}};
+
+
+
+
+
+
+
 function lorzy_make_empty_drop_target (){
 
       var x =  jQuery('<div class="lorzy-target"></div>');
@@ -91,6 +115,29 @@ function lorzy_show_expression(parent, add_event) {
     });
 
 }
+
+
+function lorzy_show_symbols(struct) {
+        jQuery.each(struct, function(item, index) {
+
+        var expression = jQuery('.library').createAppend('div', {className: 'lorzy-expression lorzy-expression-proto'});
+        expression.createAppend('div',{className: 'name'},[item]);
+        var args_hook = expression.createAppend('div',{className: 'lorzy-code-args'});
+        args_hook.createAppend('div', {className: 'lorzy-code-arg'});
+
+        //var args = item;
+        jQuery.each(index, function(arg, attr)  { 
+                    args_hook.createAppend('div', {className: 'name'}, [arg]);
+                    args_hook.createAppend('div', {className: 'type'}, [attr.type]);
+                 
+        
+        });
+
+
+    });
+    jQuery('.library .lorzy-expression').draggable(lorzy_draggable_opts);
+}
+
 function lorzy_show(ops) {
     jQuery(ops).each(
         function() {
@@ -101,7 +148,6 @@ function lorzy_show(ops) {
         console.log(tree.toJSON());
 
 
-
     jQuery('.lorzy-expression .lorzy-expression').draggable(lorzy_draggable_opts);
 
     jQuery('#wrapper').after(jQuery('<a>Remove</a>').attr('id', 'remove-entry'));
@@ -110,6 +156,7 @@ function lorzy_show(ops) {
     jQuery('#wrapper').after(jQuery('<a>Test</a>').attr('id', 'testy'));
 
 jQuery('.lorzy-expression, .lorzy-target').droppable(droppable_args);
+jQuery('.lorzy-expression, .lorzy-target').droppable(library_drop_args);
 
     jQuery('#testy').click(function () {
         jQuery.ajax({

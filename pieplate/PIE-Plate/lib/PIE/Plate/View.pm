@@ -8,6 +8,7 @@ template 'index.html' => page {'hey'};
 template 'lorzy' => page { 
     div { { id is 'result' }};
     div { { id is 'wrapper' } };
+    div { { class is 'library' } };
  outs_raw('<style>#wrapper div { padding-left:1em;} </style>');
 my $ops = [
             {   name => 'IfThen',
@@ -51,10 +52,10 @@ my $symbol_sigs = JSON->new->encode($evaluator->symbol_signatures());
 
 outs_raw(qq{<script type="text/javascript">
 
-var core_expressions = $signatures_json;
-var symbols = $symbol_sigs;
 
 jQuery(lorzy_show($json_text));
+jQuery(lorzy_show_symbols($symbol_sigs));
+jQuery(lorzy_show_symbols($signatures_json));
 
 </script>});
 
