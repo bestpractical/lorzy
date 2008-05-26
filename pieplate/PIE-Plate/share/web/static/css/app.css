@@ -1,13 +1,22 @@
+.lorzy-accepts-expression, .lorzy-accepts-appended-expression {
+        min-height: 2em;
+       border: 2px solid grey;
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+        background: #eee;
+}
 
 .droppable-active {
-       border: 2px solid red;
+       border: 2px solid green;
+        min-height: 2em;
 
 }
 
 .droppable-hover {
-        background: #f22;
-        min-height: 3em;
+        background: #2f2;
+        min-height: 2em;
 }
+
 
 draggable-active {
         color: #66f;
@@ -15,6 +24,7 @@ draggable-active {
 
 .lorzy-expression {
     border: 2px solid #666;
+    background-color: #fff;
     
 }
 
@@ -59,4 +69,13 @@ draggable-active {
   width: 300px;
   color: blue;
 }
+.droppable-hover .lorzy-expression {
+        color: #000;
+        background-color: #fff;
+    filter:alpha(opacity=20);
+    -moz-opacity:0.2;
+    -khtml-opacity: 0.2;
+    opacity: 0.2;
+}
+
 
