@@ -1,4 +1,4 @@
-.lorzy-accepts-expression, .lorzy-accepts-appended-expression {
+.lorzy-expression, .lorzy-target {
         min-height: 2em;
        border: 2px solid grey;
         padding-top: 0.25em;
@@ -7,14 +7,11 @@
 }
 
 .droppable-active {
-       border: 2px solid green;
-        min-height: 2em;
-
+    background: green;
 }
 
 .droppable-hover {
-        background: #2f2;
-        min-height: 2em;
+    background: yellow;
 }
 
 

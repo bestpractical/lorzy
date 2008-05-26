@@ -1,19 +1,52 @@
 
+     var lorzy_draggable_opts = { snap: true, revert: true, activeClass: 'draggable-active', opacity: '0.80'};
+var droppable_args = {
+            accept: '.lorzy-expression',
+            greedy: 'true',
+            hover: 'pointer',
+            activeClass: 'droppable-active',
+            hoverClass: 'droppable-hover',
+            tolerance: 'pointer',
+            drop: function(ev, ui) { 
+                    var newitem = jQuery(ui.draggable).clone();
+                      var orig = jQuery(ui.draggable); 
+                    orig.replaceWith(lorzy_make_empty_drop_target());
+                    orig.droppable(droppable_args);
+                    newitem.draggable(lorzy_draggable_opts);
+                    newitem.droppable(lorzy_draggable_opts);
+                    newitem.attr({style: 'display: block'});
+                    jQuery(this).replaceWith(newitem);
+                   lorzy_wrap_in_drop_targets(newitem);
+}};
 function lorzy_make_empty_drop_target (){
 
-      return  jQuery('<div class="lorzy-ignore">Drop here!</div>');
+      var x =  jQuery('<div class="lorzy-target"></div>');
+      x.droppable(droppable_args);
+    return(x);
 }
-function lorzy_append_expression_target(after) {
+function lorzy_wrap_in_drop_targets(after) {
+    
+    if(jQuery(after).parent().hasClass('lorzy-target')){
+        jQuery(parent).remove(after);
+    }
+    if(!jQuery(after).prev().hasClass('lorzy-target')){
 
-        var kid = after.createAppend('div', { className: 'lorzy-accepts-appended-expression'}, []);
-            var target = kid.createAppend('div',{},['']);
+        jQuery(lorzy_make_empty_drop_target()).insertBefore(after);
+        } 
 
-            target.replaceWith(lorzy_make_empty_drop_target());
+    if(!jQuery(after).next().hasClass('lorzy-target')){
+         jQuery(lorzy_make_empty_drop_target()).insertAfter(after);
+    }
 }
+
+
+
+
 function lorzy_show_expression_str(str, parent) {
-    var el = parent.createAppend('div', { className: 'lorzy-expression lorzy-const string' }, [str]);
-        lorzy_append_expression_target(parent);
-    //el.html(str) .editable(function(value, settings) { return value}, { submit: 'OK', width: '80%', } );
+    
+    var string = jQuery('<div class="lorzy-expression lorzy-const string">'+str+'</div>');
+    jQuery(parent).replaceWith(string);
+
 }
 
 function lorzy_show_expression(parent, add_event) {
@@ -32,6 +65,7 @@ function lorzy_show_expression(parent, add_event) {
     var ret = parent.createAppend('div', { className: this.name });
     ret.addClass('lorzy-expression')
     ret.addClass('lorzy-code');
+    lorzy_wrap_in_drop_targets(ret);
     var that = this;
     jQuery(ret).createAppend('div', { className: 'name'} , [this.name]);
     var codeargs = jQuery(ret).createAppend('div', { className: 'lorzy-code-args'});
@@ -41,23 +75,23 @@ function lorzy_show_expression(parent, add_event) {
         var entry = codeargs.createAppend('div', { className: that.name+' '+name });
         entry.addClass('lorzy-code-arg');
         entry.createAppend('div', { className: 'name'}, [ name]);
-        var value = entry.createAppend('div', { className: 'value lorzy-accepts-expression'});
+        var value = entry.createAppend('div', { className: 'value lorzy-expression'});
+        lorzy_wrap_in_drop_targets(value);
         if (!exp)
             return;
         if (typeof(exp) == 'string') {
             lorzy_show_expression_str(exp, value);
             return;
         } else {
-        console.log(typeof(exp));
 
         var progn = value.createAppend('div', { className: 'lorzy-progn'});
 
         lorzy_show_expression.apply(exp, [progn]); //[entry]);
-        //lorzy_append_expression_target(progn);
+
         }
     });
 
-        lorzy_append_expression_target(parent);
+        lorzy_wrap_in_drop_targets(parent);
 
     jQuery('div.lorzy-code > div.name', parent)
     .click(function(e) {
@@ -91,11 +125,6 @@ function lorzy_show(ops) {
        // var tree = lorzy_generate_struct(jQuery('#wrapper'));
         //console.log(tree.toJSON());
 
-     var lorzy_draggable_opts = { snap: true, revert: true, activeClass: 'draggable-active', opacity: '0.80', stop: function(e, ui) {
-                    var x = jQuery(ui.draggable);//.clone;
-                    x.attr({style: ''});
- }
-}; 
 
 
     jQuery('.lorzy-expression .lorzy-expression').draggable(lorzy_draggable_opts);
@@ -104,43 +133,8 @@ function lorzy_show(ops) {
     jQuery('#wrapper').after(jQuery('<a href="#">Add If</a>').attr('id', 'add-entry-if'));
     jQuery('#wrapper').after(jQuery('<a href="#">Traverse</a>').attr('id', 'clicky'));
     jQuery('#wrapper').after(jQuery('<a href="#">Test</a>').attr('id', 'testy'));
-jQuery('.lorzy-accepts-expression').droppable({
-            accept: '.lorzy-expression',
-            greedy: 'true',
-            hover: 'pointer',
-            activeClass: 'droppable-active',
-            hoverClass: 'droppable-hover',
-            tolerance: 'pointer',
-            drop: function(ev, ui) { 
-                    var newitem = jQuery(ui.draggable).clone();
-                      var orig = jQuery(ui.draggable); 
-                    orig.replaceWith(lorzy_make_empty_drop_target());
-                    orig.droppable('enable');
-                    jQuery(this).children().replaceWith(newitem);
-                    newitem.draggable(lorzy_draggable_opts);
-                    newitem.attr({style: ''});
-                    return true;
-}});
 
-jQuery('.lorzy-accepts-appended-expression').droppable({
-            accept: '.lorzy-expression',
-            greedy: 'true',
-            hover: 'pointer',
-            activeClass: 'droppable-active',
-            hoverClass: 'droppable-hover',
-            tolerance: 'pointer',
-            drop: function(ev, ui) { 
-                    var newitem = jQuery(ui.draggable).clone();
-                      var orig = jQuery(ui.draggable); 
-                    orig.replaceWith(lorzy_make_empty_drop_target());
-                    orig.droppable('enable');
-                    newitem.draggable(lorzy_draggable_opts);
-                    newitem.attr({style: ''});
-                    jQuery(this).css("color: #f00");
-                    newitem.insertBefore(jQuery(this));
-                    console.log(jQuery(this));
-                    return true;
-}});
+jQuery('.lorzy-expression, .lorzy-target').droppable(droppable_args);
 
     jQuery('#testy').click(function () {
         jQuery.ajax({
