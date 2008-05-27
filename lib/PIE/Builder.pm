@@ -9,7 +9,8 @@ use UNIVERSAL::require;
 
 sub build_op_expression {
     my ($self, $name, $args) = @_;
-    my $class = "PIE::Expression::$name";
+    $name = "PIE::Expression::$name" unless ($name =~ /^PIE::Expression/);
+    my $class = $name;
     $class->require;
     $class = "PIE::Expression" unless $class->can('meta');
 

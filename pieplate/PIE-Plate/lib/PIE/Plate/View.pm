@@ -8,7 +8,11 @@ template 'index.html' => page {'hey'};
 template 'lorzy' => page { 
     div { { id is 'result' }};
     div { { id is 'wrapper' } };
-    div { { class is 'library' } };
+    div { { class is 'library' } 
+    
+        h2 {  'Function library'};
+    
+    };
  outs_raw('<style>#wrapper div { padding-left:1em;} </style>');
 my $ops = [
             {   name => 'IfThen',

@@ -35,8 +35,10 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
 $eval->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 
-    my $script  = $builder->defun( ops => $tree, signature => {});
-    eval { $eval->apply_script($script, {} )};
+    eval { 
+            my $script  = $builder->defun( ops => $tree, signature => {});
+
+            $eval->apply_script($script, {} )};
     if (my $msg = $@) { 
         $self->result->error($msg);
     }else {
