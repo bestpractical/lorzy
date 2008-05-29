@@ -38,25 +38,26 @@ var lorzy_droppable_opts = {
             hoverClass: 'droppable-hover',
             tolerance: 'pointer',
             drop: function(ev, ui) { 
-                      var orig = jQuery(ui.draggable); 
-                    var newitem = jQuery(ui.draggable).clone();
-                    newitem.removeClass('lorzy-expression-proto');
-                    newitem.attr({style: 'display: block'});
-                    newitem.draggable(lorzy_draggable_opts);
-                    newitem.droppable(lorzy_droppable_opts);
-                    newitem.insertAfter(this);
+                var orig = jQuery(ui.draggable); 
+                var newitem = jQuery(ui.draggable).clone();
+                newitem.removeClass('lorzy-expression-proto')
+                  .attr({style: 'display: block'})
+                  .draggable(lorzy_draggable_opts)
+                  .droppable(lorzy_droppable_opts)
+                  .insertAfter(this);
 
-                      if (!orig.parent().hasClass('library')) {
-                        lorzy_remove_ast_node(orig);
+                if (!orig.parent().hasClass('library')) {
+                    lorzy_remove_ast_node(orig);
 
-                         jQuery(this).replaceWith('');
-                    }
+                    jQuery(this).replaceWith('');
+                }
 
-                   lorzy_wrap_in_drop_targets(newitem);
-                    // These are way too loose. once i know how to say 'all children of this element matching this selector it will get cleaner
-                    jQuery('#wrapper .lorzy-expression').droppable(lorzy_droppable_opts);
-                    jQuery('#wrapper .lorzy-target').droppable(lorzy_droppable_opts);
-	                    make_elements_editable(jQuery('#wrapper .lorzy-expression.lorzy-const.string'));
+                lorzy_wrap_in_drop_targets(newitem);
+
+                // use livequery or something
+                jQuery('.lorzy-expression', newitem).droppable(lorzy_droppable_opts);
+                jQuery('.lorzy-target', newitem).droppable(lorzy_droppable_opts);
+	        make_elements_editable(jQuery('.lorzy-expression.lorzy-const.string', newitem));
                 return true;
 
 }};
@@ -235,37 +236,13 @@ function lorzy_show(ops) {
 
     });
 
-    jQuery('#remove-entry').click(function() {
-        var el = jQuery('div.selected');
-        if (el.hasClass("value"))
-            el.empty();
-        else
-            el.remove();
-        
-    });
-
-    jQuery('#add-entry-if').click(function() {
-        var el = jQuery('div.selected');
-        if (!el.hasClass('value')) {
-            el = el.parent();
-        }
-        lorzy_show_expression.apply({ name: 'IfThen',
-                                      args: { if_true: null,
-                                              if_false: null,
-                                              condition: null
-                                            } }, [el, true] );
-    });
-    
     jQuery('#clicky').click(function () { 
-  
- 
-    var x =  lorzy_generate_struct('#wrapper');
-            x = x.toJSON().split(",").join(",\n");
+        var x =  lorzy_generate_struct('#wrapper').toJSON().split(",").join(",\n");
         ghetto_lightbox('<pre>'+x+'</pre>');
    
-   });
+    });
 
-	make_elements_editable(jQuery('#wrapper .lorzy-expression.lorzy-const.string'));
+    make_elements_editable(jQuery('#wrapper .lorzy-expression.lorzy-const.string'));
     return true;
 };
 
