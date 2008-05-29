@@ -10,8 +10,13 @@ use UNIVERSAL::require;
 sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = $name;
-    $class->require;
-    $class = "PIE::Expression" unless $class->can('meta');
+    $class = "PIE::Expression::$name" unless ($name =~ /^PIE::Expression/);
+    if ($class->can('meta')) {
+        $name = $class;
+    }
+    else {
+        $class = "PIE::Expression";
+    }
 
     # XXX: in case of primitive-ops, we should only bulid the args we
     # know about
