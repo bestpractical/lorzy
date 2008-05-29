@@ -229,7 +229,7 @@ function lorzy_show(ops) {
             json = json.split(",").join(",\n");
             ghetto_lightbox('<pre>'+json+'</pre>');
 }, 
-    'data': 'struct='+lorzy_generate_struct(jQuery('#wrapper')).toJSON()
+    'data': 'struct='+lorzy_generate_struct('#wrapper').toJSON()
 })
 
 
@@ -259,7 +259,7 @@ function lorzy_show(ops) {
     jQuery('#clicky').click(function () { 
   
  
-    var x =  lorzy_generate_struct(jQuery('#wrapper'));
+    var x =  lorzy_generate_struct('#wrapper');
             x = x.toJSON().split(",").join(",\n");
         ghetto_lightbox('<pre>'+x+'</pre>');
    
