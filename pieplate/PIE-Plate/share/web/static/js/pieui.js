@@ -312,32 +312,17 @@ function make_elements_editable (elements) {
 
 
 function lorzy_generate_struct(parent) {
-
-      var ops = jQuery(parent).children();
-     var tree=   jQuery.grep( 
-         
-     
-     jQuery.map(ops, function (op) {
-        return lorzy_generate_op(jQuery(op));
-        }
-
-        ),
+    var ops = jQuery(parent).children();
+    var tree=   jQuery.grep( 
+        jQuery.map(ops, function (op) { return lorzy_generate_op(jQuery(op)); }),
 
         function(element, index) {
-                if (element &&  (! jQuery(element).hasClass('lorzy-target'))) {
-                return true;
-                    } else {
-                return false;
-                }
+            return (element && !jQuery(element).hasClass('lorzy-target'))
         }
-
     );
    
     return tree;
-
-                    //#lorzy_generate_struct(op)]:
-
-};
+}
 
 
 function lorzy_generate_op (op) {
