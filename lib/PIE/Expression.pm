@@ -99,9 +99,7 @@ class_has signature => (
     }
 );
 
-has args => (
-    is => 'rw',
-    default => sub { {} },
+has '+args' => (
     isa => 'HashRef[Str]');
 
 
