@@ -9,7 +9,7 @@ has block_id => (
                  default => sub { ++$BLOCK_IDS },
 );
 
-has outter_block => (
+has outer_block => (
                      is => 'rw',
                      weak_ref => 1,
                      default => sub { undef },
@@ -23,7 +23,7 @@ around 'new' => sub {
     $self->_walk( $self,
                   sub { my $block = shift;
                         return unless $block->does('PIE::Block');
-                        $block->outter_block($self);
+                        $block->outer_block($self);
                         return 1;
                     } );
 

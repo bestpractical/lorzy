@@ -232,7 +232,7 @@ has lambda => (
             progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
             signature => $self->mk_signature,
             block_id => $self->block_id,
-            outter_block => $self->outter_block,
+            outer_block => $self->outer_block,
         );
     },
 );

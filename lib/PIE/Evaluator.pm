@@ -101,7 +101,7 @@ sub lookup_lex_name {
         # if we find the variable, we can return it
 
         return $stack->{$name} if exists $stack->{$name};
-    } while ($block = $block->outter_block);
+    } while ($block = $block->outer_block);
 
     return;
 }
