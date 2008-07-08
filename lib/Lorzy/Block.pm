@@ -4,28 +4,28 @@ use Moose::Role;
 our $BLOCK_IDS = 0;
 
 has block_id => (
-                 is => 'ro',
-                 isa => 'Num',
-                 default => sub { ++$BLOCK_IDS },
+    is      => 'ro',
+    isa     => 'Num',
+    default => sub { ++$BLOCK_IDS },
 );
 
 has outer_block => (
-                     is => 'rw',
-                     weak_ref => 1,
-                     default => sub { undef },
+    is       => 'rw',
+    weak_ref => 1,
 );
 
-around 'new' => sub {
-    my $next = shift;
-    my $class = shift;
-    my $self = $class->$next(@_);
+sub BUILD {
+    my $self = shift;
     return $self if ref($self) eq 'Lorzy::Lambda::Native';
-    $self->_walk( $self,
-                  sub { my $block = shift;
-                        return unless $block->does('Lorzy::Block');
-                        $block->outer_block($self);
-                        return 1;
-                    } );
+    $self->_walk(
+        $self,
+        sub {
+            my $block = shift;
+            return unless $block->does('Lorzy::Block');
+            $block->outer_block($self);
+            return 1;
+        },
+    );
 
     return $self;
 };
@@ -47,8 +47,7 @@ sub _walk {
             $self->_walk($exp->args->{$_}, $cb);
         }
     }
-
 }
 
-
 1;
+
