@@ -1,5 +1,9 @@
-use Test::More tests => 8;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 8;
+
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Lambda');
@@ -7,17 +11,16 @@ use_ok('Lorzy::Lambda::Native');
 use_ok('Lorzy::Builder');
 use_ok('Lorzy::FunctionArgument');
 
-
 my $eval = Lorzy::Evaluator->new;
 my $builder = Lorzy::Builder->new();
 
-my $A_SIDE = Lorzy::Builder->defun( 
-        ops => [ 
-        
+my $A_SIDE = Lorzy::Builder->defun(
+        ops => [
+
          { name => 'Symbol', args => { symbol => 'x'}},
                     { name => 'Symbol', args => { symbol => 'y'} }
-                
-                
+
+
                 ],
         signature => { x => Lorzy::FunctionArgument->new(name => 'x', type => 'Str')});
 

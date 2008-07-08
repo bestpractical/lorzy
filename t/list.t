@@ -1,11 +1,16 @@
-use Test::More tests => 6;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 6;
+use Test::Exception;
+
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Builder');
 use_ok('Lorzy::Lambda::Native');
 use_ok('Lorzy::FunctionArgument');
-use Test::Exception;
+
 my $builder = Lorzy::Builder->new();
 my $eval = Lorzy::Evaluator->new();
 

@@ -1,11 +1,15 @@
-use Test::More tests => 13;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 13;
+use Test::Exception;
+
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Builder');
 use_ok('Lorzy::Lambda::Native');
 use_ok('Lorzy::FunctionArgument');
-use Test::Exception;
 
 my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
@@ -41,7 +45,7 @@ my $script =
                                 name => 'match-regexp',
                                 args => {
                                     regexp => { name => 'Symbol', args => { symbol => 'REGEXP' } },
-                                    'tested-string' => 
+                                    'tested-string' =>
                                          { name => 'Symbol', args => { symbol => 'tested-string' } }, # lookup to tested string needs to query the outer block's lexpad
                                     }
                                 }

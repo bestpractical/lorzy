@@ -1,8 +1,13 @@
-use Test::More tests => 14;
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Test::More tests => 15;
 
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Builder');
 use_ok('Lorzy::FunctionArgument');
+use_ok('Lorzy::Lambda::Native');
 
 package Hello;
 
@@ -17,15 +22,9 @@ has 'evaluator' => (
 );
 
 has 'rules' => (
-
-    #    metaclass => 'Collection::Array',
-    is  => 'rw',
-    isa => 'ArrayRef',
-
-    #     provides  => {
-    #                 push       => 'push_rules'
-    #     },
-    #    default   => sub { [] },
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    default => sub { [] },
 );
 
 sub run {
@@ -33,7 +32,7 @@ sub run {
     my $name = shift;
 
      my $args = { name => Lorzy::Expression::String->new( args => { value => $name } ) };
-    for ( @{ $self->rules || [] } ) {
+    for ( @{ $self->rules } ) {
         $self->evaluator->apply_script( $_, $args);
 
         last unless ( $self->evaluator->result->success );
@@ -50,7 +49,6 @@ is( Hello->new->run('jesse'), 'Hello jesse' );
 my $hello = Hello->new;
 isa_ok( $hello => 'Hello' );
 
-use Lorzy::Lambda::Native;
 $hello->evaluator->set_global_symbol( 'make-fred',
     Lorzy::Lambda::Native->new( body => sub { return 'fred' } ) );
 $hello->evaluator->set_global_symbol( 'make-bob',
@@ -110,4 +108,3 @@ $hello->rules( [ $hello->evaluator->get_global_symbol('make-whoever') ] );
 isa_ok( $hello->rules->[0], 'Lorzy::Lambda' );
 is( $hello->run('jesse'), 'Hello jesse' );
 
-1;

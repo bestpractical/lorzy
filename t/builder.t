@@ -1,5 +1,9 @@
-use Test::More tests => 4;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 4;
+
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Builder');
@@ -19,11 +23,9 @@ my $script = $builder->defun(
                                                } } ],
                             signature => {});
 
-#warn Dumper($script);use Data::Dumper;
 # XXX: ensure $script structure
-use Data::Dumper;
-is_deeply($script->progn->nodes, 
-        [ 
+is_deeply($script->progn->nodes,
+        [
           bless( {
                    'signature' => {},
                    'name' => 'ProgN',

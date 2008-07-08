@@ -1,5 +1,8 @@
-use Test::More tests => 26;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 26;
 
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
@@ -86,7 +89,7 @@ my $MATCH_REGEX = Lorzy::Lambda::Native->new(
 $eval9->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 $eval9->apply_script(
-    $MATCH_REGEX, 
+    $MATCH_REGEX,
     {   'tested-string' => Lorzy::Expression::String->new( args => {value => 'I do love software'} ),
         'regexp' => Lorzy::Expression::String->new( args => { value => 'software' })
     }

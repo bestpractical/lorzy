@@ -1,18 +1,22 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
 
 use Test::More tests => 6;
+
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Lambda::Native');
+
 my $e = Lorzy::Evaluator->new();
 
 my $signatures =  $e->core_expression_signatures;
 is_deeply($signatures->{'Lorzy::Expression::True'} , {});
-is_deeply($signatures->{'Lorzy::Expression::IfThen'} , { if_true => { type => 'Lorzy::Evaluatable'},
-                                                    if_false => {type => 'Lorzy::Evaluatable'},
-                                                    condition => {type => 'Lorzy::Evaluatable'}
-    
-    
-    });
+is_deeply($signatures->{'Lorzy::Expression::IfThen'}, {
+        if_true   => { type => 'Lorzy::Evaluatable' },
+        if_false  => { type => 'Lorzy::Evaluatable' },
+        condition => { type => 'Lorzy::Evaluatable' },
+});
+
 my $symbols = $e->symbol_signatures();
 is_deeply($symbols, {});
 

@@ -1,18 +1,21 @@
-use Test::More tests => 10;
-use warnings;
+#!/usr/bin/env perl
 use strict;
+use warnings;
+
+use Test::More tests => 10;
 
 use_ok('Lorzy::Lambda');
 use_ok('Lorzy::Lambda::Native');
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::FunctionArgument');
+
 my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg = $args->{'tested-string'};
         my $regex = $args->{'regex'};
-            
+
         return $arg =~ m/$regex/;
     },
 
@@ -44,7 +47,7 @@ $eval6->set_global_symbol( 'match-regex' => $MATCH_REGEX );
 
 my $match_fail_p = Lorzy::Expression->new(
         name => 'match-regex',
-        args => { 
+        args => {
         'tested-string' => Lorzy::Expression::String->new( args => { value => 'I do love hardware' }),
         'regex' => Lorzy::Expression::String->new( args => { value => 'software'} )
 }
