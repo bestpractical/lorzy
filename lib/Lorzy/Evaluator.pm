@@ -4,7 +4,7 @@ use MooseX::AttributeHelpers;
 
 use Lorzy::EvaluatorResult;
 use Lorzy::Expression;
-use Params::Validate;
+use Params::Validate qw/validate validate_pos HASHREF/;
 
 has result => (
     is      => 'ro',
@@ -114,11 +114,10 @@ sub apply_script {
     # self, a lambda, any number of positional params. (to be replaced with a params object?)
     my ($self, $lambda, $args) = validate_pos(
         @_,
-        { isa => 'Lorzy::Evaluator' },
-        { ISA => 'Lorzy::Lambda' },
-        { ISA => "HASHREF" }
+        { isa  => 'Lorzy::Evaluator' },
+        { isa  => 'Lorzy::Lambda'    },
+        { type => HASHREF            },
     );
-    confess "Invalid lambda passed to apply_script" unless $lambda;
 
     my $ret = $lambda->apply($self => $args);
     $self->result->value($ret);
