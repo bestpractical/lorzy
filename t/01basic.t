@@ -123,6 +123,6 @@ $eval10->apply_script(
     ),
     {},
 );
-ok( $eval10->result->success, " Did not get an error: ".$eval10->result->error );
+ok( $eval10->result->success, " Did not get an error: ". ($eval10->result->error||'') );
 is( $eval10->result->value, 'love' );
 
