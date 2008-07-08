@@ -49,5 +49,7 @@ sub _walk {
     }
 }
 
+no Moose::Role;
+
 1;
 

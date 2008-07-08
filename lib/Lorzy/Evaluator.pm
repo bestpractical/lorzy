@@ -170,5 +170,8 @@ sub _flatten_symbol_signature {
     };
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;
 

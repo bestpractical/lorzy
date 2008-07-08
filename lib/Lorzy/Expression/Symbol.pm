@@ -31,5 +31,8 @@ sub evaluate {
          : $result; # XXX: figure out evaluation order here
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;
 

@@ -15,5 +15,8 @@ has value => (
 #   isa => 'Str | Undef | Lorzy::EvaluatorResult::RunTime',
 );
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;
 

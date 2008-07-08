@@ -35,5 +35,8 @@ sub evaluate {
 # force loading of each expression subclass
 __PACKAGE__->expression_types;
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;
 

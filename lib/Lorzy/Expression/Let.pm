@@ -47,5 +47,8 @@ sub evaluate {
     $self->lambda->apply($evaluator, $self->bindings);
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;
 
