@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Lorzy::Expression::IfThen;
 use Moose;
 use MooseX::ClassAttribute;

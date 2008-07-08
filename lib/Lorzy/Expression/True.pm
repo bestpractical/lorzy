@@ -6,7 +6,7 @@ extends 'Lorzy::Expression';
 
 class_has signature => (
     is      => 'ro',
-    default => sub { { } } ,
+    default => sub { {} } ,
 );
 
 sub evaluate { 1 }

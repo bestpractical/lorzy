@@ -19,8 +19,8 @@ class_has signature => (
 
 sub evaluate {
     my ($self, $eval) = validate_pos(@_,
-        { isa => 'Lorzy::Expression'},
-        { isa => 'Lorzy::Evaluator'},
+        { isa => 'Lorzy::Expression' },
+        { isa => 'Lorzy::Evaluator'  },
     );
 
     my $symbol = $self->{'args'}->{'symbol'}->evaluate($eval);

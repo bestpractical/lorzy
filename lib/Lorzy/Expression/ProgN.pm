@@ -4,7 +4,7 @@ use MooseX::ClassAttribute;
 extends 'Lorzy::Expression';
 
 class_has signature => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { {} },
 );
 
