@@ -28,17 +28,17 @@ is_deeply($script->progn->nodes,
         [
           bless( {
                    'signature' => {},
-                   'name' => 'ProgN',
+                   'name' => 'Lorzy::Expression::ProgN',
                    'args' => {},
                    'nodes' => [
                                 bless( {
                                          'signature' => {},
-                                         'name' => 'True',
+                                         'name' => 'Lorzy::Expression::True',
                                          'args' => {}
                                        }, 'Lorzy::Expression::True' ),
                                 bless( {
                                          'signature' => {},
-                                         'name' => 'False',
+                                         'name' => 'Lorzy::Expression::False',
                                          'args' => {}
                                        }, 'Lorzy::Expression::False' )
                               ]
