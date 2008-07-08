@@ -41,9 +41,19 @@ sub build_expression {
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
     } else {
-        require YAML;
-        confess "Don't know what to do with a tree that looks like "
-              . YAML::Dump($tree);
+        my $dump;
+
+        # if they have YAML, use it
+        if (eval { require YAML; 1 }) {
+            $dump = YAML::Dump($tree);
+        }
+        # otherwise, go with the old fogey
+        else {
+            require Data::Dumper;
+            $dump = Data::Dumper->Dump($tree);
+        }
+
+        confess "Invalid tree $tree. Expected string or hashref. Got $dump.";
     }
 }
 
