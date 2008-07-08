@@ -3,7 +3,7 @@ use Moose;
 
 has name => (
     is  => 'rw',
-    isa => 'Str'
+    isa => 'Str',
 );
 
 has type => (
@@ -13,7 +13,7 @@ has type => (
 
 has description => (
     is  => 'rw',
-    isa => 'Str | Undef',
+    isa => 'Str',
 );
 
 __PACKAGE__->meta->make_immutable;
