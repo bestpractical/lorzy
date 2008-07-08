@@ -1,4 +1,4 @@
-use Test::More qw'no_plan';
+use Test::More tests => 8;
 use strict;
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');

@@ -1,11 +1,13 @@
-use Test::More qw'no_plan';
+use Test::More tests => 26;
 use strict;
+
 use_ok('Lorzy::Expression');
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Lambda');
 use_ok('Lorzy::Lambda::Native');
 use_ok('Lorzy::Builder');
 use_ok('Lorzy::FunctionArgument');
+
 my $trivial = Lorzy::Expression::True->new;
 
 my $evaluator = Lorzy::Evaluator->new;

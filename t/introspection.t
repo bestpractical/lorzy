@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More qw/no_plan/;
+use Test::More tests => 6;
 use_ok('Lorzy::Evaluator');
 use_ok('Lorzy::Lambda::Native');
 my $e = Lorzy::Evaluator->new();
