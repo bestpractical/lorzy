@@ -13,12 +13,6 @@ has name => (
    isa => 'Str',
 );
 
-has elements => (
-   is      => 'ro',
-   isa     => 'ArrayRef',
-   default => sub { [] },
-);
-
 has signature => (
     is      => 'rw',
     isa     => 'HashRef[Lorzy::FunctionArgument]',
