@@ -139,9 +139,7 @@ sub core_expression_signatures {
 
 sub _enumerate_core_expressions {
     my $self = shift;
-    return grep { $_ && $_->isa('Lorzy::Expression') }
-           map  { /^(.*)::$/ ? 'Lorzy::Expression::' . $1 : undef }
-           keys %Lorzy::Expression::;
+    return Lorzy::Expression->expression_types;
 }
 
 sub _flatten_core_expression_signature {

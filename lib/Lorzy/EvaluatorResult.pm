@@ -2,21 +2,18 @@ package Lorzy::EvaluatorResult;
 use Moose;
 
 has success => (
-    is => 'rw',
-    isa => 'Bool'
+    is  => 'rw',
+    isa => 'Bool',
 );
 
-has error => ( 
+has error => (
     is => 'rw',
-    
-
 );
 
-has value => ( 
-    is => 'rw',
-#    isa => 'Str | Undef | Lorzy::EvaluatorResult::RunTime',
-    required => 0
-    );
-
+has value => (
+    is  => 'rw',
+#   isa => 'Str | Undef | Lorzy::EvaluatorResult::RunTime',
+);
 
 1;
+
