@@ -1,13 +1,13 @@
 use Test::More tests => 6;
 use strict;
-use_ok('PIE::Expression');
-use_ok('PIE::Evaluator');
-use_ok('PIE::Builder');
-use_ok('PIE::Lambda::Native');
-use_ok('PIE::FunctionArgument');
+use_ok('Lorzy::Expression');
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::Builder');
+use_ok('Lorzy::Lambda::Native');
+use_ok('Lorzy::FunctionArgument');
 use Test::Exception;
-my $builder = PIE::Builder->new();
-my $eval = PIE::Evaluator->new();
+my $builder = Lorzy::Builder->new();
+my $eval = Lorzy::Evaluator->new();
 
 my $script =
     $builder->defun(
@@ -24,7 +24,7 @@ $eval->set_global_symbol( 'get-list' => $script );
 
 my @remembered;
 $eval->set_global_symbol( 'remember' =>
-PIE::Lambda::Native->new(
+Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         push @remembered, $args->{what};
@@ -32,7 +32,7 @@ PIE::Lambda::Native->new(
     },
 
     signature => {
-        'what' => PIE::FunctionArgument->new( name => 'what' => type => 'Str'),
+        'what' => Lorzy::FunctionArgument->new( name => 'what' => type => 'Str'),
         }
 
 ) );

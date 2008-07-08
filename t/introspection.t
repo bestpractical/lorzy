@@ -1,22 +1,22 @@
 #!/usr/bin/perl
 
 use Test::More qw/no_plan/;
-use_ok('PIE::Evaluator');
-use_ok('PIE::Lambda::Native');
-my $e = PIE::Evaluator->new();
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::Lambda::Native');
+my $e = Lorzy::Evaluator->new();
 
 my $signatures =  $e->core_expression_signatures;
-is_deeply($signatures->{'PIE::Expression::True'} , {});
-is_deeply($signatures->{'PIE::Expression::IfThen'} , { if_true => { type => 'PIE::Evaluatable'},
-                                                    if_false => {type => 'PIE::Evaluatable'},
-                                                    condition => {type => 'PIE::Evaluatable'}
+is_deeply($signatures->{'Lorzy::Expression::True'} , {});
+is_deeply($signatures->{'Lorzy::Expression::IfThen'} , { if_true => { type => 'Lorzy::Evaluatable'},
+                                                    if_false => {type => 'Lorzy::Evaluatable'},
+                                                    condition => {type => 'Lorzy::Evaluatable'}
     
     
     });
 my $symbols = $e->symbol_signatures();
 is_deeply($symbols, {});
 
-my $MATCH_REGEX = PIE::Lambda::Native->new(
+my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg    = $args->{'tested-string'};
@@ -25,8 +25,8 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     },
 
     signature => {
-        'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
-        'regexp' => PIE::FunctionArgument->new( name => 'regexp', type => 'Str' )
+        'tested-string' => Lorzy::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
+        'regexp' => Lorzy::FunctionArgument->new( name => 'regexp', type => 'Str' )
         }
 
 );

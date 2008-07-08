@@ -1,4 +1,4 @@
-package PIE::FunctionArgument;
+package Lorzy::FunctionArgument;
 use Moose;
 
 
@@ -11,7 +11,7 @@ has name => (
 
 has type => (
     is => 'rw',
-    isa => 'Str'# I want an enum of String, Number, Undef, PIE::Expression..what else?
+    isa => 'Str'# I want an enum of String, Number, Undef, Lorzy::Expression..what else?
 );
 
 has description => (

@@ -1,7 +1,7 @@
 
 =head1 NAME 
 
-PIE - The Pinglin Interactive Evaluator
+Lorzy - The Pinglin Interactive Evaluator
 
 =head1 AUTHOR
 
@@ -14,7 +14,7 @@ Perl
 
 =cut
 
-package PIE;
+package Lorzy;
 
 our $VERSION = 0;
 

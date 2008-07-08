@@ -2,12 +2,12 @@ use Test::More qw/no_plan/;
 use warnings;
 use strict;
 
-use_ok('PIE::Lambda');
-use_ok('PIE::Lambda::Native');
-use_ok('PIE::Expression');
-use_ok('PIE::Evaluator');
-use_ok('PIE::FunctionArgument');
-my $MATCH_REGEX = PIE::Lambda::Native->new(
+use_ok('Lorzy::Lambda');
+use_ok('Lorzy::Lambda::Native');
+use_ok('Lorzy::Expression');
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::FunctionArgument');
+my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg = $args->{'tested-string'};
@@ -17,19 +17,19 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     },
 
     signature => {
-           'tested-string' =>  PIE::FunctionArgument->new( name =>              'tested-string' =>  type => 'Str' ),
-           'regex'=>  PIE::FunctionArgument->new( name =>      'regex', type => 'Str' )
+           'tested-string' =>  Lorzy::FunctionArgument->new( name =>              'tested-string' =>  type => 'Str' ),
+           'regex'=>  Lorzy::FunctionArgument->new( name =>      'regex', type => 'Str' )
     }
 
 );
-my $eval5 = PIE::Evaluator->new;
+my $eval5 = Lorzy::Evaluator->new;
 $eval5->set_global_symbol( 'match-regex' => $MATCH_REGEX );
 
-my $match_p = PIE::Expression->new(
+my $match_p = Lorzy::Expression->new(
         name => 'match-regex',
         args => {
-            'tested-string' =>          PIE::Expression::String->new( args => {value => 'I do love software'} ),
-            'regex' =>                  PIE::Expression::String->new( args => { value => 'software' } )
+            'tested-string' =>          Lorzy::Expression::String->new( args => {value => 'I do love software'} ),
+            'regex' =>                  Lorzy::Expression::String->new( args => { value => 'software' } )
         }
 );
 
@@ -38,15 +38,15 @@ ok( $eval5->result->success );
 
 is( $eval5->result->value, 1 );
 
-my $eval6 = PIE::Evaluator->new();
+my $eval6 = Lorzy::Evaluator->new();
 
 $eval6->set_global_symbol( 'match-regex' => $MATCH_REGEX );
 
-my $match_fail_p = PIE::Expression->new(
+my $match_fail_p = Lorzy::Expression->new(
         name => 'match-regex',
         args => { 
-        'tested-string' => PIE::Expression::String->new( args => { value => 'I do love hardware' }),
-        'regex' => PIE::Expression::String->new( args => { value => 'software'} )
+        'tested-string' => Lorzy::Expression::String->new( args => { value => 'I do love hardware' }),
+        'regex' => Lorzy::Expression::String->new( args => { value => 'software'} )
 }
 );
 
@@ -55,11 +55,11 @@ ok( $eval6->result->success );
 ok( !$eval6->result->value );
 
 
-my $match_orz = PIE::Expression->new(
+my $match_orz = Lorzy::Expression->new(
         name => 'match-regex',
         args => {
-            'tested-string' =>          PIE::Expression::String->new( args => { value => 'I do love software'} ),
-            'wrong-param-name' =>            PIE::Expression::String->new( args => {  value => 'software' }),
+            'tested-string' =>          Lorzy::Expression::String->new( args => { value => 'I do love software'} ),
+            'wrong-param-name' =>            Lorzy::Expression::String->new( args => {  value => 'software' }),
         }
 );
 

@@ -1,8 +1,8 @@
 use Test::More tests => 14;
 
-use_ok('PIE::Evaluator');
-use_ok('PIE::Builder');
-use_ok('PIE::FunctionArgument');
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::Builder');
+use_ok('Lorzy::FunctionArgument');
 
 package Hello;
 
@@ -11,9 +11,9 @@ use MooseX::AttributeHelpers;
 
 has 'evaluator' => (
     is      => 'rw',
-    isa     => 'PIE::Evaluator',
+    isa     => 'Lorzy::Evaluator',
     lazy    => 1,
-    default => sub { return PIE::Evaluator->new() },
+    default => sub { return Lorzy::Evaluator->new() },
 );
 
 has 'rules' => (
@@ -32,7 +32,7 @@ sub run {
     my $self = shift;
     my $name = shift;
 
-     my $args = { name => PIE::Expression::String->new( args => { value => $name } ) };
+     my $args = { name => Lorzy::Expression::String->new( args => { value => $name } ) };
     for ( @{ $self->rules || [] } ) {
         $self->evaluator->apply_script( $_, $args);
 
@@ -50,64 +50,64 @@ is( Hello->new->run('jesse'), 'Hello jesse' );
 my $hello = Hello->new;
 isa_ok( $hello => 'Hello' );
 
-use PIE::Lambda::Native;
+use Lorzy::Lambda::Native;
 $hello->evaluator->set_global_symbol( 'make-fred',
-    PIE::Lambda::Native->new( body => sub { return 'fred' } ) );
+    Lorzy::Lambda::Native->new( body => sub { return 'fred' } ) );
 $hello->evaluator->set_global_symbol( 'make-bob',
-    PIE::Lambda::Native->new( body => sub { return 'bob' } ) );
+    Lorzy::Lambda::Native->new( body => sub { return 'bob' } ) );
 
 $hello->evaluator->set_global_symbol(
     'make-whoever',
-    PIE::Lambda::Native->new(
+    Lorzy::Lambda::Native->new(
         body => sub { my $args = shift; return $args->{'name'} },
         signature => {
-            name => PIE::FunctionArgument->new( name => 'name', type => 'Str' )
+            name => Lorzy::FunctionArgument->new( name => 'name', type => 'Str' )
             }
 
     )
 );
 
 my $tree    = [ { name => 'make-fred' } ];
-my $builder = PIE::Builder->new();
+my $builder = Lorzy::Builder->new();
 my $script  = $builder->defun(
     ops => $tree,
     signature =>
-        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+        { name => Lorzy::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 
 $hello->rules( [$script] );
-isa_ok( $hello->rules->[0], 'PIE::Lambda' );
+isa_ok( $hello->rules->[0], 'Lorzy::Lambda' );
 is( $hello->run('jesse'), 'Hello fred' );
 
 my $script2 = $builder->defun(
     ops => [ { name => 'make-bob' }, { name => 'make-fred' } ],
     signature =>
-        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+        { name => Lorzy::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 $hello->rules( [$script2] );
-isa_ok( $hello->rules->[0], 'PIE::Lambda' );
+isa_ok( $hello->rules->[0], 'Lorzy::Lambda' );
 
 is( $hello->run('jesse'), 'Hello fred' );
 
 my $script3 = $builder->defun(
     ops => [ { name => 'make-bob' } ],
     signature =>
-        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+        { name => Lorzy::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 my $script4 = $builder->defun(
     ops => [ { name => 'make-fred' } ],
     signature =>
-        { name => PIE::FunctionArgument->new( name => 'name', type => 'Str' ) }
+        { name => Lorzy::FunctionArgument->new( name => 'name', type => 'Str' ) }
 );
 
 $hello->rules( [ $script3, $script4 ] );
 
-isa_ok( $hello->rules->[0], 'PIE::Lambda' );
-isa_ok( $hello->rules->[1], 'PIE::Lambda' );
+isa_ok( $hello->rules->[0], 'Lorzy::Lambda' );
+isa_ok( $hello->rules->[1], 'Lorzy::Lambda' );
 is( $hello->run('jesse'), 'Hello fred' );
 
 $hello->rules( [ $hello->evaluator->get_global_symbol('make-whoever') ] );
-isa_ok( $hello->rules->[0], 'PIE::Lambda' );
+isa_ok( $hello->rules->[0], 'Lorzy::Lambda' );
 is( $hello->run('jesse'), 'Hello jesse' );
 
 1;

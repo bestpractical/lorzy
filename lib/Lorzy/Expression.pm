@@ -1,9 +1,9 @@
 
-package PIE::Expression;
-use PIE::FunctionArgument;
+package Lorzy::Expression;
+use Lorzy::FunctionArgument;
 use Moose;
 
-with 'PIE::Evaluatable';    
+with 'Lorzy::Evaluatable';    
 
 has name => (
    is => 'ro',
@@ -16,12 +16,12 @@ has elements => (
 has signature => ( 
     is => 'rw',
     default => sub { {}},
-    isa => 'HashRef[PIE::FunctionArgument]');
+    isa => 'HashRef[Lorzy::FunctionArgument]');
 
 has args => (
     is => 'rw',
     default => sub { {} },
-    isa => 'HashRef[PIE::Expression]');
+    isa => 'HashRef[Lorzy::Expression]');
 
 sub evaluate {
     my ($self, $ev) = @_;
@@ -30,18 +30,18 @@ sub evaluate {
     return $ev->result->value;
 }
 
-package PIE::Expression::True;
+package Lorzy::Expression::True;
 use Moose;
 use MooseX::ClassAttribute;
 
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 
 class_has signature => ( is => 'ro', default => sub { { }});
 sub evaluate {1}
 
-package PIE::Expression::False;
+package Lorzy::Expression::False;
 use Moose;
-extends 'PIE::Expression::True';
+extends 'Lorzy::Expression::True';
 
 sub evaluate {
     my $self = shift;
@@ -49,9 +49,9 @@ sub evaluate {
 
 }
 
-package PIE::Expression::IfThen;
+package Lorzy::Expression::IfThen;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 use Params::Validate qw/validate_pos/;
 use MooseX::ClassAttribute;
 
@@ -59,23 +59,23 @@ class_has signature => (
     is      => 'ro',
     default => sub {
          {
-            condition => PIE::FunctionArgument->new(
+            condition => Lorzy::FunctionArgument->new(
                 name => 'condition',
-                type  => 'PIE::Evaluatable'),
+                type  => 'Lorzy::Evaluatable'),
 
-            if_true => PIE::FunctionArgument->new(
+            if_true => Lorzy::FunctionArgument->new(
                 name => 'if_true',
-                type  => 'PIE::Evaluatable'),
-           if_false => PIE::FunctionArgument->new(
+                type  => 'Lorzy::Evaluatable'),
+           if_false => Lorzy::FunctionArgument->new(
                 name => 'if_false',
-                type  => 'PIE::Evaluatable'
+                type  => 'Lorzy::Evaluatable'
                 )
             }
     }
 );
 
 sub evaluate {
-    my ($self, $evaluator) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'}, );
+    my ($self, $evaluator) = validate_pos(@_, { isa => 'Lorzy::Expression'}, { isa => 'Lorzy::Evaluator'}, );
 
     my $truth= $self->args->{condition}->evaluate($evaluator);
     if ($truth) {
@@ -85,16 +85,16 @@ sub evaluate {
     }
 }
 
-package PIE::Expression::String;
+package Lorzy::Expression::String;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 use Params::Validate qw/validate_pos/;
 use MooseX::ClassAttribute;
 
 class_has signature => (
     is      => 'ro',
     default => sub {
-        { value => PIE::FunctionArgument->new( name => 'value', type => 'Str' )
+        { value => Lorzy::FunctionArgument->new( name => 'value', type => 'Str' )
         };
     }
 );
@@ -106,8 +106,8 @@ has '+args' => (
 sub evaluate {
     my ( $self, $eval ) = validate_pos(
         @_,
-        { isa => 'PIE::Expression' },
-        { isa => 'PIE::Evaluator' }
+        { isa => 'Lorzy::Expression' },
+        { isa => 'Lorzy::Evaluator' }
     );
 
 
@@ -115,10 +115,10 @@ sub evaluate {
 
 }
 
-package PIE::Expression::ProgN;
+package Lorzy::Expression::ProgN;
 use MooseX::ClassAttribute;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 class_has signature => ( is => 'ro', default => sub { { }});
 
 has nodes => (
@@ -145,53 +145,53 @@ sub evaluate {
     return $res;
 }
 
-package PIE::Expression::Symbol;
+package Lorzy::Expression::Symbol;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 use Params::Validate qw/validate_pos/;
 use MooseX::ClassAttribute;
 
 class_has signature => (
     is => 'ro',
-    default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
+    default => sub { { symbol => Lorzy::FunctionArgument->new( name => 'symbol', type => 'Str')}});
 
 sub evaluate {
-    my ($self, $eval) = validate_pos(@_, { isa => 'PIE::Expression'}, { isa => 'PIE::Evaluator'});
+    my ($self, $eval) = validate_pos(@_, { isa => 'Lorzy::Expression'}, { isa => 'Lorzy::Evaluator'});
     my $symbol = $self->{'args'}->{'symbol'}->evaluate($eval);
     my $result = $eval->resolve_symbol_name($symbol);
-    return ref($result) && $result->meta->does_role('PIE::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
+    return ref($result) && $result->meta->does_role('Lorzy::Evaluatable') ? $result->evaluate($eval): $result; # XXX: figure out evaluation order here
 }
 
-package PIE::Expression::List;
+package Lorzy::Expression::List;
 use Moose;
-extends 'PIE::Expression::ProgN';
+extends 'Lorzy::Expression::ProgN';
 
 sub evaluate {
     my ($self, $evaluator) = @_;
-    return bless \$self->nodes, 'PIE::EvaluatorResult::RunTime';
+    return bless \$self->nodes, 'Lorzy::EvaluatorResult::RunTime';
 }
 
-package PIE::Expression::ForEach;
+package Lorzy::Expression::ForEach;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 use MooseX::ClassAttribute;
 
 class_has signature => (
     is => 'ro',
-    default => sub { { list => PIE::FunctionArgument->new( name => 'list'),
-                       binding => PIE::FunctionArgument->new( name => 'Str'),
-                       do => PIE::FunctionArgument->new( name => 'Str', type => 'PIE::Lambda'), # XXX: type for runtime?
+    default => sub { { list => Lorzy::FunctionArgument->new( name => 'list'),
+                       binding => Lorzy::FunctionArgument->new( name => 'Str'),
+                       do => Lorzy::FunctionArgument->new( name => 'Str', type => 'Lorzy::Lambda'), # XXX: type for runtime?
                    }});
 
 sub evaluate {
     my ($self, $evaluator) = @_;
     my $lambda = $self->args->{do}->evaluate($evaluator);
-    die unless $lambda->isa("PIE::Lambda");
+    die unless $lambda->isa("Lorzy::Lambda");
 
     my $binding = $self->args->{binding}->evaluate($evaluator);
     my $list = $self->args->{list}->evaluate($evaluator);
 
-    die unless ref($list) eq 'PIE::EvaluatorResult::RunTime';
+    die unless ref($list) eq 'Lorzy::EvaluatorResult::RunTime';
     my $nodes = $$list;
 
     foreach (@$nodes) {
@@ -200,21 +200,21 @@ sub evaluate {
 
 }
 
-package PIE::Expression::Symbol;
+package Lorzy::Expression::Symbol;
 use Moose;
-extends 'PIE::Expression';
+extends 'Lorzy::Expression';
 use Params::Validate qw/validate_pos/;
 use MooseX::ClassAttribute;
 
 class_has signature => (
     is => 'ro',
-    default => sub { { symbol => PIE::FunctionArgument->new( name => 'symbol', type => 'Str')}});
+    default => sub { { symbol => Lorzy::FunctionArgument->new( name => 'symbol', type => 'Str')}});
 
 
-package PIE::Expression::Let;
+package Lorzy::Expression::Let;
 use Moose;
-extends 'PIE::Expression::ProgN';
-with 'PIE::Block';
+extends 'Lorzy::Expression::ProgN';
+with 'Lorzy::Block';
 
 has bindings => (
     is => 'rw',
@@ -224,12 +224,12 @@ has bindings => (
 
 has lambda => (
     is => 'ro',
-    isa => 'PIE::Lambda',
+    isa => 'Lorzy::Lambda',
     lazy => 1,
     default => sub {
         my $self = shift;
-        PIE::Lambda->new(
-            progn     => PIE::Expression::ProgN->new( nodes => $self->nodes ),
+        Lorzy::Lambda->new(
+            progn     => Lorzy::Expression::ProgN->new( nodes => $self->nodes ),
             signature => $self->mk_signature,
             block_id => $self->block_id,
             outer_block => $self->outer_block,
@@ -250,7 +250,7 @@ sub BUILD {
 
 sub mk_signature {
     my $self = shift;
-    return { map { $_ => PIE::FunctionArgument->new( name => $_, type => 'Str') } keys %{ $self->bindings } };
+    return { map { $_ => Lorzy::FunctionArgument->new( name => $_, type => 'Str') } keys %{ $self->bindings } };
 }
 
 sub evaluate {

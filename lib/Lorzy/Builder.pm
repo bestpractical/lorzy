@@ -1,27 +1,27 @@
 
-package PIE::Builder;
+package Lorzy::Builder;
 use Moose;
 use Params::Validate;
-use PIE::Lambda;
+use Lorzy::Lambda;
 
-use PIE::Expression;
+use Lorzy::Expression;
 use UNIVERSAL::require;
 
 sub build_op_expression {
     my ($self, $name, $args) = @_;
     my $class = $name;
-    $class = "PIE::Expression::$name" unless ($name =~ /^PIE::Expression/);
+    $class = "Lorzy::Expression::$name" unless ($name =~ /^Lorzy::Expression/);
     if ($class->can('meta')) {
         $name = $class;
     }
     else {
-        $class = "PIE::Expression";
+        $class = "Lorzy::Expression";
     }
 
     # XXX: in case of primitive-ops, we should only bulid the args we
     # know about
 
-    my @known_args = $class eq 'PIE::Expression' ? keys %$args : keys %{ $class->signature };
+    my @known_args = $class eq 'Lorzy::Expression' ? keys %$args : keys %{ $class->signature };
     return $class->new( name => $name, builder => $self, builder_args => $args,
                         args => { map { $_ => $self->build_expression( $args->{$_} ) } @known_args } );
 
@@ -30,7 +30,7 @@ sub build_op_expression {
 sub build_expression {
     my ($self, $tree) = @_;
     if (!ref($tree)) {
-        return PIE::Expression::String->new(args => { value => $tree} );
+        return Lorzy::Expression::String->new(args => { value => $tree} );
     }
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
@@ -43,7 +43,7 @@ sub build_expression {
 sub defun {
     my $self = shift;
     my %args = validate( @_, { ops => 1, signature => 1 });
-    return PIE::Lambda->new( progn => PIE::Expression::ProgN->new(
+    return Lorzy::Lambda->new( progn => Lorzy::Expression::ProgN->new(
                                                                   nodes => [map { $self->build_expression($_) } @{$args{ops}} ]),
                              signature => $args{signature} );
 }

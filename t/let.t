@@ -1,13 +1,13 @@
 use Test::More tests => 13;
 use strict;
-use_ok('PIE::Expression');
-use_ok('PIE::Evaluator');
-use_ok('PIE::Builder');
-use_ok('PIE::Lambda::Native');
-use_ok('PIE::FunctionArgument');
+use_ok('Lorzy::Expression');
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::Builder');
+use_ok('Lorzy::Lambda::Native');
+use_ok('Lorzy::FunctionArgument');
 use Test::Exception;
 
-my $MATCH_REGEX = PIE::Lambda::Native->new(
+my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg    = $args->{'tested-string'};
@@ -16,14 +16,14 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     },
 
     signature => {
-        'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
-        'regexp' => PIE::FunctionArgument->new( name => 'regexp', type => 'Str' )
+        'tested-string' => Lorzy::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
+        'regexp' => Lorzy::FunctionArgument->new( name => 'regexp', type => 'Str' )
         }
 
 );
 
-my $builder = PIE::Builder->new();
-my $eval = PIE::Evaluator->new();
+my $builder = Lorzy::Builder->new();
+my $eval = Lorzy::Evaluator->new();
 $eval->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 my $script =
@@ -48,15 +48,15 @@ my $script =
                             }
                     }
                     ] } } ],
-    signature => { 'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str' ) },
+    signature => { 'tested-string' => Lorzy::FunctionArgument->new( name => 'tested-string' => type => 'Str' ) },
     );
 
 is(scalar @{$script->progn->nodes}, 1);
-isa_ok($script->progn->nodes->[0], 'PIE::Expression::Let');
+isa_ok($script->progn->nodes->[0], 'Lorzy::Expression::Let');
 is(scalar @{$script->progn->nodes->[0]->nodes}, 1);
 
 ok(exists $script->progn->nodes->[0]->bindings->{REGEXP});
-isa_ok($script->progn->nodes->[0]->bindings->{REGEXP}, 'PIE::Expression');
+isa_ok($script->progn->nodes->[0]->bindings->{REGEXP}, 'Lorzy::Expression');
 
 
 lives_ok {

@@ -1,5 +1,5 @@
 
-package PIE::Evaluatable;
+package Lorzy::Evaluatable;
 use Moose::Role;
 
 requires 'evaluate';

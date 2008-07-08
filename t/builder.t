@@ -1,11 +1,11 @@
 use Test::More qw'no_plan';
 use strict;
-use_ok('PIE::Expression');
-use_ok('PIE::Evaluator');
-use_ok('PIE::Builder');
+use_ok('Lorzy::Expression');
+use_ok('Lorzy::Evaluator');
+use_ok('Lorzy::Builder');
 
-my $builder = PIE::Builder->new();
-my $eval = PIE::Evaluator->new();
+my $builder = Lorzy::Builder->new();
+my $eval = Lorzy::Evaluator->new();
 #$eval->set_global_symbol( 'match-regexp' => $MATCH_REGEX );
 
 my $script = $builder->defun(
@@ -33,13 +33,13 @@ is_deeply($script->progn->nodes,
                                          'signature' => {},
                                          'name' => 'True',
                                          'args' => {}
-                                       }, 'PIE::Expression::True' ),
+                                       }, 'Lorzy::Expression::True' ),
                                 bless( {
                                          'signature' => {},
                                          'name' => 'False',
                                          'args' => {}
-                                       }, 'PIE::Expression::False' )
+                                       }, 'Lorzy::Expression::False' )
                               ]
-                 }, 'PIE::Expression::ProgN' )
+                 }, 'Lorzy::Expression::ProgN' )
 
         ]                );

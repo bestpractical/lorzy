@@ -1,9 +1,9 @@
 
-package PIE::Lambda::Native;
+package Lorzy::Lambda::Native;
 use Moose; 
 use YAML;
 use Scalar::Defer;
-extends 'PIE::Lambda';
+extends 'Lorzy::Lambda';
 
 has body => (
     is => 'ro',

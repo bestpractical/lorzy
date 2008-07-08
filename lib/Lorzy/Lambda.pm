@@ -1,20 +1,20 @@
 
-package PIE::Lambda;
+package Lorzy::Lambda;
 use Moose; use MooseX::Params::Validate;
 
-with 'PIE::Block';
+with 'Lorzy::Block';
 
 has progn => (
     is => 'ro',
-    isa => 'PIE::Expression::ProgN',
-    default => sub { PIE::Expression::ProgN->new },
+    isa => 'Lorzy::Expression::ProgN',
+    default => sub { Lorzy::Expression::ProgN->new },
     handles => [qw(nodes)]
 );
 
 has signature => (
     is => 'rw',
     default => sub { {} },
-    isa => 'HashRef[PIE::FunctionArgument]');
+    isa => 'HashRef[Lorzy::FunctionArgument]');
 
 sub check_args {
     my $self = shift;

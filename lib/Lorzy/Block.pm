@@ -1,4 +1,4 @@
-package PIE::Block;
+package Lorzy::Block;
 use Moose::Role;
 
 our $BLOCK_IDS = 0;
@@ -19,10 +19,10 @@ around 'new' => sub {
     my $next = shift;
     my $class = shift;
     my $self = $class->$next(@_);
-    return $self if ref($self) eq 'PIE::Lambda::Native';
+    return $self if ref($self) eq 'Lorzy::Lambda::Native';
     $self->_walk( $self,
                   sub { my $block = shift;
-                        return unless $block->does('PIE::Block');
+                        return unless $block->does('Lorzy::Block');
                         $block->outer_block($self);
                         return 1;
                     } );

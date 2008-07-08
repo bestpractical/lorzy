@@ -1,14 +1,14 @@
 
-package PIE::Evaluator;
+package Lorzy::Evaluator;
 use Moose;
 use MooseX::AttributeHelpers;
-use PIE::EvaluatorResult;
+use Lorzy::EvaluatorResult;
 use Params::Validate;
 
 has result => ( 
     is => 'ro',
-    isa => 'PIE::EvaluatorResult',
-    default => sub { return PIE::EvaluatorResult->new()}
+    isa => 'Lorzy::EvaluatorResult',
+    default => sub { return Lorzy::EvaluatorResult->new()}
     );
 
 has global_symbols => (
@@ -30,7 +30,7 @@ has lex_block_map => (
 has stack_block => (
     is => 'rw',
     metaclass => 'Collection::Array',
-    isa       => 'ArrayRef[PIE::Block]',
+    isa       => 'ArrayRef[Lorzy::Block]',
     default   => sub { [] },
     provides  => {
         'push' => 'push_stack_block',
@@ -118,8 +118,8 @@ sub apply_script {
 # self, a lambda, any number of positional params. (to be replaced with a params object?)
     my ( $self, $lambda, $args ) = validate_pos(
         @_,
-        { isa => 'PIE::Evaluator' },
-        { ISA => 'PIE::Lambda' },
+        { isa => 'Lorzy::Evaluator' },
+        { ISA => 'Lorzy::Lambda' },
         { ISA => "HASHREF" }
     );
     Carp::confess unless($lambda);
@@ -144,11 +144,11 @@ sub core_expression_signatures {
 sub _enumerate_core_expressions {
     my $self = shift;
     no strict 'refs';
-    use PIE::Expression;
+    use Lorzy::Expression;
     my @core_expressions
-        = grep { $_ && $_->isa('PIE::Expression') }
-        map { /^(.*)::$/ ? 'PIE::Expression::' . $1 : '' }
-        keys %{'PIE::Expression::'};
+        = grep { $_ && $_->isa('Lorzy::Expression') }
+        map { /^(.*)::$/ ? 'Lorzy::Expression::' . $1 : '' }
+        keys %{'Lorzy::Expression::'};
     return @core_expressions;
 }
 

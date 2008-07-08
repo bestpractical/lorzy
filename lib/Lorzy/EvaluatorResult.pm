@@ -1,4 +1,4 @@
-package PIE::EvaluatorResult;
+package Lorzy::EvaluatorResult;
 use Moose;
 
 has success => (
@@ -14,7 +14,7 @@ has error => (
 
 has value => ( 
     is => 'rw',
-#    isa => 'Str | Undef | PIE::EvaluatorResult::RunTime',
+#    isa => 'Str | Undef | Lorzy::EvaluatorResult::RunTime',
     required => 0
     );
 
