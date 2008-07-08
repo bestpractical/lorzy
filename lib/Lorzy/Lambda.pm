@@ -1,6 +1,5 @@
 package Lorzy::Lambda;
 use Moose;
-use MooseX::Params::Validate;
 
 with 'Lorzy::Block';
 
