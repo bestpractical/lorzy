@@ -16,6 +16,10 @@ Perl
 
 package Lorzy;
 
+use Lorzy::Builder;
+use Lorzy::Evaluator;
+use Lorzy::Lambda::Native;
+
 our $VERSION = 0;
 
 1;

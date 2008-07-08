@@ -1,9 +1,5 @@
 package Lorzy::Plate::Action::RunL;
-use Lorzy::Lambda;
-use Lorzy::Lambda::Native;
-use Lorzy::Builder;
-use Lorzy::FunctionArgument;
-use Lorzy::Evaluator;
+use Lorzy;
 use JSON;
 
 use Jifty::Param::Schema;
