@@ -1,5 +1,5 @@
 
-=head1 NAME 
+=head1 NAME
 
 Lorzy - The Pinglin Interactive Evaluator
 
