@@ -1,46 +1,72 @@
 
 package PIE::Lambda;
 use Moose; use MooseX::Params::Validate;
-with 'PIE::Evaluatable';
 
-has nodes => (
-    is => 'rw',
-    isa => 'ArrayRef',
+with 'PIE::Block';
+
+has progn => (
+    is => 'ro',
+    isa => 'PIE::Expression::ProgN',
+    default => sub { PIE::Expression::ProgN->new },
+    handles => [qw(nodes)]
 );
 
-has bindings => (
+has signature => (
     is => 'rw',
-    isa => 'ArrayRef[Str]');
+    default => sub { {} },
+    isa => 'HashRef[PIE::FunctionArgument]');
 
-has arguments => (
-    is => 'rw',
-    isa => 'HashRef[PIE::Function::Argument]');
-
-
-sub check_bindings {
+sub check_args {
     my $self = shift;
-    my $passed = shift;
-    my $bindings = $self->bindings;
-    Carp::croak "unmatched number of arguments. ".($#{$bindings}+1)." expected. Got ".($#{$passed}+1) unless $#{$bindings} == $#{$passed};
-
-}
-
-sub bind_expressions {
-    my ($self, $ev, @exp) = @_;
-    $self->check_bindings(\@exp);
-    my $bindings = $self->bindings;
-    $ev->set_named( $bindings->[$_] => $exp[$_] ) for 0.. $#exp;
-}
-
-sub evaluate {
-    my $self = shift;
-    my $evaluator = shift;
-
-    $self->bind_expressions( $evaluator, @_ );
-
-    foreach my $node (@{$self->nodes}) {
-        $evaluator->run($node);
+    my $passed = shift; #reference to hash of provided args
+    my $expected = $self->signature; # expected args
+    
+    
+    my $missing = {};
+    my $unwanted = {};
+    
+    my $fail =0;
+    foreach my $arg (keys %$passed) {
+            if  (!$expected->{$arg}) {
+            $unwanted->{$arg} =  "The caller passed $arg which we were not expecting" ;
+            };
     }
+    foreach my $arg (keys %$expected) {
+                 if  (!$passed->{$arg}) {
+
+                $missing->{$arg} =  "The caller did not pass $arg which we require";
+                }
+    }
+
+    return $missing, $unwanted;
+}
+
+sub validate_args_or_die {
+    my $self = shift;
+    my $args = shift;
+    my ( $missing, $unwanted ) = $self->check_args( $args);
+
+    if ( keys %$missing || keys %$unwanted ) {
+        die "Function signature mismatch \n".
+        (keys %$missing? "The following arguments were missing: " . join(", ", keys %$missing) ."\n" : ''),
+        (keys %$unwanted? "The following arguments were unwanted: " . join(", ", keys %$unwanted)."\n" : '');
+
+    }
+} 
+
+sub apply {
+    my ($self, $evaluator, $args) = @_;
+
+    $self->validate_args_or_die($args);
+
+    $evaluator->enter_stack_frame( args => $args, block => $self );
+    my $res = $self->progn->evaluate($evaluator);
+
+    $evaluator->leave_stack_frame(); 
+    return $res;
+    #return $evaluator->result->value; 
+
+    
 }
 
 1;

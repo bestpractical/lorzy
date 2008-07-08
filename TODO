@@ -1,10 +1,10 @@
 Backend
 
-# is there a reason we shouldn't force _all_ arguments to _all_ functions to be named? 
+# is there a reason we shouldn't force _all_ arguments to _all_ functions to be global_symbols? 
 
-- define named functions with typed arguments
+- define global_symbols functions with typed arguments
   - builtins
-    - control op: named subexpression?
+    - control op: global_symbols subexpression?
     - 
 
 
@@ -15,7 +15,7 @@ Backend
   args => { value => 'defined-symbol' } }
   
 { op => 'orz',
-  args => { named1 => EXP2,
+  args => { global_symbols1 => EXP2,
             orz2   => EXP3 } }
 
 
@@ -60,7 +60,7 @@ GUI Builder
 - let user add an expression as an argument to an existing expression
 - let user add expression to run sequentially "after" another expression
 - serialize and save the tree of expressions 
-- save a tree of expressions as a named thingy which can be referenced from other expressions.
+- save a tree of expressions as a global_symbols thingy which can be referenced from other expressions.
 
 Hooks
 

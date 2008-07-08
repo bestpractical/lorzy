@@ -1,39 +1,51 @@
 
 package PIE::Builder;
 use Moose;
-
+use Params::Validate;
 use PIE::Lambda;
+
 use PIE::Expression;
+use UNIVERSAL::require;
 
 sub build_op_expression {
     my ($self, $name, $args) = @_;
-    my $class = "PIE::Expression::$name";
-    die unless $class->meta->does_role("PIE::Evaluatable");
-    
-    $class->new( map { $_ => $self->build_expression( $args->{$_} ) } keys %$args );
+    my $class = $name;
+    $class = "PIE::Expression::$name" unless ($name =~ /^PIE::Expression/);
+    if ($class->can('meta')) {
+        $name = $class;
+    }
+    else {
+        $class = "PIE::Expression";
+    }
+
+    # XXX: in case of primitive-ops, we should only bulid the args we
+    # know about
+
+    my @known_args = $class eq 'PIE::Expression' ? keys %$args : keys %{ $class->signature };
+    return $class->new( name => $name, builder => $self, builder_args => $args,
+                        args => { map { $_ => $self->build_expression( $args->{$_} ) } @known_args } );
+
 }
 
 sub build_expression {
     my ($self, $tree) = @_;
     if (!ref($tree)) {
-        return PIE::Expression::String->new(value => $tree );
-    }
-    elsif (ref($tree) eq 'ARRAY') {
-        my ($func, @rest) = @$tree;
-        return PIE::Expression->new( elements => [$func, map { $self->build_expression($_) } @rest]);
+        return PIE::Expression::String->new(args => { value => $tree} );
     }
     elsif (ref($tree) eq 'HASH') {
         return $self->build_op_expression($tree->{name}, $tree->{args});
+    } else {
+        Carp::confess("Don't know what to do with a tree that looksl ike ". YAML::Dump($tree));use YAML;
     }
 }
 
 
-sub build_expressions {
+sub defun {
     my $self = shift;
-    my $ops = shift;
-
-    return PIE::Lambda->new( nodes => [map { $self->build_expression($_) } @$ops ] );
+    my %args = validate( @_, { ops => 1, signature => 1 });
+    return PIE::Lambda->new( progn => PIE::Expression::ProgN->new(
+                                                                  nodes => [map { $self->build_expression($_) } @{$args{ops}} ]),
+                             signature => $args{signature} );
 }
-
 
 1;

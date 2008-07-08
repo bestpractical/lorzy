@@ -63,7 +63,7 @@ Just to name things:
         does it return results or does it shove results in some input handed to it?
         
 
-    a block is essentially a named bricks built up of one or more blocks or bricks
+    a block is essentially a global_symbols bricks built up of one or more blocks or bricks
     
     
 
@@ -300,7 +300,7 @@ sub exec {}
 # a class to describe an op tree
 # a class to run an optree
 # primitives for basic ops
-    # run a named optree like it's a primitive
+    # run a global_symbols optree like it's a primitive
     
 # primitives for variables
 # a way to store an optree as a variable

@@ -1,6 +1,8 @@
 
 package PIE::Lambda::Native;
 use Moose; 
+use YAML;
+use Scalar::Defer;
 extends 'PIE::Lambda';
 
 has body => (
@@ -8,16 +10,15 @@ has body => (
 #    isa => 'CODE',
 );
 
-sub bind_expressions {
-    my ($self, $evaluator, @exp) = @_;
-    return;
+
+
+sub apply {
+    my ( $self, $evaluator, $args ) = @_;
+
+    $self->validate_args_or_die($args);
+    my $r = $self->body->( {map { $_ => $args->{$_}->evaluate($evaluator) } keys %$args });
+    return $r;
 }
 
-sub evaluate {
-    my $self = shift;
-    my $evaluator = shift;
-    $self->check_bindings(\@_);
-    $self->body->(map {$evaluator->run($_); $evaluator->result->value } @_);
-}
 
 1;
