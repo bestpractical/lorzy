@@ -1,10 +1,12 @@
-package PIE::Plate::Action::RunL;
-use PIE::Lambda;
-use PIE::Lambda::Native;
-use PIE::Builder; use PIE::FunctionArgument;
-use PIE::Evaluator; use JSON;
+package Lorzy::Plate::Action::RunL;
+use Lorzy::Lambda;
+use Lorzy::Lambda::Native;
+use Lorzy::Builder;
+use Lorzy::FunctionArgument;
+use Lorzy::Evaluator;
+use JSON;
 use Jifty::Param::Schema;
-use PIE::Plate::Action schema {
+use Lorzy::Plate::Action schema {
     param struct => type is 'text';
 };
 
@@ -13,11 +15,11 @@ sub take_action {
     my $self = shift;
     warn $self->argument_value('struct');
     my $tree = JSON::from_json($self->argument_value('struct'));
-    my $builder = PIE::Builder->new();
-    my $eval = PIE::Evaluator->new();
+    my $builder = Lorzy::Builder->new();
+    my $eval = Lorzy::Evaluator->new();
 
 
-my $MATCH_REGEX = PIE::Lambda::Native->new(
+my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg = $args->{'tested-string'};
@@ -27,8 +29,8 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     },
 
     signature => {
-           'tested-string' =>  PIE::FunctionArgument->new( name =>              'tested-string' =>  type => 'Str' ),
-           'regexp'=>  PIE::FunctionArgument->new( name =>      'regex', type => 'Str' )
+           'tested-string' =>  Lorzy::FunctionArgument->new( name =>              'tested-string' =>  type => 'Str' ),
+           'regexp'=>  Lorzy::FunctionArgument->new( name =>      'regex', type => 'Str' )
     }
 
 );

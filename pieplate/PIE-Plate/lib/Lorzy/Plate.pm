@@ -1,4 +1,4 @@
-package PIE::Plate;
+package Lorzy::Plate;
 
 Jifty->web->add_javascript(
     qw( jquery.superflydom.js
@@ -9,7 +9,7 @@ Jifty->web->add_javascript(
         jquery.ui-1.5b4/ui.selectable.js
         jquery.ui-1.5b4/ui.draggable.js
         jquery.ui-1.5b4/ui.droppable.js
-        pieui.js ));
+        lorzyui.js ));
 
 
 1;

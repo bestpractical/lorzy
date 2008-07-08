@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-package PIE::Plate::View;
+package Lorzy::Plate::View;
 use Jifty::View::Declare -base;
 use JSON;
 
@@ -32,8 +32,8 @@ my $ops = [
 
 my $json_text   = JSON->new->encode($ops);
 
-my $evaluator = PIE::Evaluator->new();
-my $MATCH_REGEX = PIE::Lambda::Native->new(
+my $evaluator = Lorzy::Evaluator->new();
+my $MATCH_REGEX = Lorzy::Lambda::Native->new(
     body => sub {
         my $args = shift;
         my $arg    = $args->{'tested-string'};
@@ -42,8 +42,8 @@ my $MATCH_REGEX = PIE::Lambda::Native->new(
     },
 
     signature => {
-        'tested-string' => PIE::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
-        'regexp' => PIE::FunctionArgument->new( name => 'regexp', type => 'Str' )
+        'tested-string' => Lorzy::FunctionArgument->new( name => 'tested-string' => type => 'Str'),
+        'regexp' => Lorzy::FunctionArgument->new( name => 'regexp', type => 'Str' )
         }
 
 );

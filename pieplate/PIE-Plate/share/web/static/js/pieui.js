@@ -175,7 +175,7 @@ function lorzy_show_symbols(struct) {
                     var arg = args_hook.createAppend('div', {className: 'lorzy-code-arg'});
                     arg.createAppend('div', {className: 'name'}, [attr]);
                     var value = arg.createAppend('div', {className: 'value'});
-                   if (arg_list[attr].type == 'PIE::Expression') {
+                   if (arg_list[attr].type == 'Lorzy::Expression') {
                         value.append( lorzy_make_empty_drop_target() );
                     } if (arg_list[attr].type == 'Str') {
                         value.append(lorzy_make_expression_str('(click me to edit)'));
@@ -223,7 +223,7 @@ function lorzy_show(ops) {
 
     jQuery('#testy').click(function () {
         jQuery.ajax({
-    'url': '/=/action/Pie.Plate.Action.RunL.json',
+    'url': '/=/action/Lorzy.Plate.Action.RunL.json',
     'datatype': 'text/json',
     'type': 'post',
     'success': function(json) { 

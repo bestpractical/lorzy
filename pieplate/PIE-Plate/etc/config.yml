@@ -1,14 +1,14 @@
 --- 
 framework: 
   AdminMode: 1
-  ApplicationClass: PIE::Plate
-  ApplicationName: PIE::Plate
+  ApplicationClass: Lorzy::Plate
+  ApplicationName: Lorzy::Plate
   ApplicationUUID: 5DB8E502-2887-11DD-9E60-9ACD23E51681
   ConfigFileVersion: 3
   Database: 
     AutoUpgrade: 1
     CheckSchema: 1
-    Database: pie::plate
+    Database: lorzy
     Driver: SQLite
     Host: localhost
     Password: ''
@@ -51,7 +51,7 @@ framework:
     Backend: Memcached
     Enable: ~
   SkipAccessControl: 0
-  TemplateClass: PIE::Plate::View
+  TemplateClass: Lorzy::Plate::View
   View: 
     FallbackHandler: Jifty::View::Mason::Handler
     Handlers: 
