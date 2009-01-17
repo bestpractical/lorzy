@@ -5,6 +5,7 @@ use MooseX::AttributeHelpers;
 use Lorzy::EvaluatorResult;
 use Lorzy::Expression;
 use Params::Validate qw/validate validate_pos HASHREF/;
+use UNIVERSAL::require;
 
 has result => (
     is      => 'ro',
@@ -134,6 +135,20 @@ sub core_expression_signatures {
     }
 
     return \%signatures;
+}
+
+sub load_package {
+    my ($self, $package) = @_;
+    my $pkg = "Lorzy::Package::".$package;
+    $pkg->require or die $!;
+    while (my ($name, $def) = each %{$pkg->functions}) {
+        my $func = $def->{native}
+            ? Lorzy::Lambda::Native->new( body => $def->{native},
+                                          signature => $def->{signature} )
+            : Lorzy::Lambda->new( progn => $def->{ops},
+                                  signature => $def->{signature} );
+        $self->set_global_symbol($package.'.'.$name => $func);
+    }
 }
 
 sub _enumerate_core_expressions {

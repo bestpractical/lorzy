@@ -12,32 +12,14 @@ use_ok('Lorzy::Lambda::Native');
 my $builder = Lorzy::Builder->new();
 my $eval = Lorzy::Evaluator->new();
 
-my $invoke_native = Lorzy::Lambda::Native->new(
-    body => sub {
-        my $args = shift;
-        my $method = $args->{method};
-        die "Invalid 'args' $args->{args}" unless ref($args->{args}) eq 'Lorzy::EvaluatorResult::RunTime';
-        my $nodes = ${$args->{args}};
-
-        $args->{obj}->$method( @$nodes );
-    },
-
-    signature => {
-        'obj' => Lorzy::FunctionArgument->new( name => 'obj'),
-        'method' => Lorzy::FunctionArgument->new( name => 'method', type => 'Str' ),
-        'args' => Lorzy::FunctionArgument->new( name => 'args' ),
-        }
-
-);
-
-$eval->set_global_symbol( 'invoke!' => $invoke_native );
+$eval->load_package('Native');
 
 my $script = $builder->defun(
                              ops => [
                                      { name => 'ProgN',
                                        args => {
                                                 nodes => [
-                                                          { name => 'invoke!', args => 
+                                                          { name => 'Native.Invoke', args => 
                                                             { obj => { name => 'Symbol', args => { symbol => 'something' } },
                                                               method => 'hello',
                                                               args => { name => 'List', nodes => [ 'orz' ] },
