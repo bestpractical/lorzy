@@ -4,6 +4,7 @@ use MooseX::AttributeHelpers;
 
 use Lorzy::EvaluatorResult;
 use Lorzy::Expression;
+use Lorzy::Lambda::Native;
 use Params::Validate qw/validate validate_pos HASHREF/;
 use UNIVERSAL::require;
 
@@ -182,6 +183,15 @@ sub _flatten_symbol_signature {
     return {
         map { $_->name => { type => $_->type } } values %$signature
     };
+}
+
+sub evaluated_result {
+    my ($self, $exp) = @_;
+
+    ref($exp) && $exp->can('meta') && $exp->meta->does_role('Lorzy::Evaluatable')
+         ? $exp->evaluate($self)
+         : $exp; # XXX: figure out evaluation order here
+
 }
 
 __PACKAGE__->meta->make_immutable;

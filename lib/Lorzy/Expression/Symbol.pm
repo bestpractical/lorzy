@@ -26,9 +26,7 @@ sub evaluate {
     my $symbol = $self->{'args'}->{'symbol'}->evaluate($eval);
     my $result = $eval->resolve_symbol_name($symbol);
 
-    return ref($result) && $result->can('meta') && $result->meta->does_role('Lorzy::Evaluatable')
-         ? $result->evaluate($eval)
-         : $result; # XXX: figure out evaluation order here
+    return $eval->evaluated_result($result);
 }
 
 __PACKAGE__->meta->make_immutable;
