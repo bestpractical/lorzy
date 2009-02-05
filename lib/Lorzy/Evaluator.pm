@@ -139,8 +139,8 @@ sub core_expression_signatures {
 }
 
 sub load_package {
-    my ($self, $package) = @_;
-    my $pkg = "Lorzy::Package::".$package;
+    my ($self, $package, $pkg) = @_;
+    $pkg ||= "Lorzy::Package::".$package;
     $pkg->require or die $!;
     while (my ($name, $def) = each %{$pkg->functions}) {
         my $func = $def->{native}
