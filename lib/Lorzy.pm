@@ -16,6 +16,8 @@ Perl
 
 package Lorzy;
 
+our $VERSION = 1;
+
 use Lorzy::Builder;
 use Lorzy::Evaluator;
 use Lorzy::Lambda::Native;
@@ -30,7 +32,5 @@ sub evaluate {
     $eval->apply_script($script, {});
     return $eval->result->value;
 }
-
-our $VERSION = 0;
 
 1;
