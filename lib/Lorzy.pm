@@ -16,7 +16,7 @@ Perl
 
 package Lorzy;
 
-our $VERSION = 1;
+our $VERSION = 0.01;
 
 use Lorzy::Builder;
 use Lorzy::Evaluator;
