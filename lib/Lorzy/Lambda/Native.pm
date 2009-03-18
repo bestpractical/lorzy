@@ -12,7 +12,7 @@ sub apply {
     $self->validate_args_or_die($args);
     my %args = map { $_ => $evaluator->evaluated_result($args->{$_}) }
         keys %$args;
-    my $r = $self->body->(\%args);
+    my $r = $self->body->(\%args, $evaluator);
     return $r;
 }
 

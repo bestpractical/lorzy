@@ -188,7 +188,7 @@ sub _flatten_symbol_signature {
 sub evaluated_result {
     my ($self, $exp) = @_;
 
-    ref($exp) && $exp->can('meta') && $exp->meta->does_role('Lorzy::Evaluatable')
+    ref($exp) && UNIVERSAL::can($exp, 'meta') && $exp->meta->does_role('Lorzy::Evaluatable')
          ? $exp->evaluate($self)
          : $exp; # XXX: figure out evaluation order here
 

@@ -1,5 +1,6 @@
 package Lorzy::Package::Native;
 use base 'Lorzy::Package';
+use strict;
 
 __PACKAGE__->defun( 'Invoke',
     signature => {
@@ -9,11 +10,27 @@ __PACKAGE__->defun( 'Invoke',
         },
     native => sub {
         my $args = shift;
+        my $eval = shift;
         my $method = $args->{method};
         die "Invalid 'args' $args->{args}" unless ref($args->{args}) eq 'Lorzy::EvaluatorResult::RunTime';
         my $nodes = ${$args->{args}};
 
-        $args->{obj}->$method( @$nodes );
+        $args->{obj}->$method( map { $eval->evaluated_result($_) } @$nodes );
+    },
+);
+
+__PACKAGE__->defun( 'Apply',
+    signature => {
+        'code' => Lorzy::FunctionArgument->new( name => 'code'),
+        'args' => Lorzy::FunctionArgument->new( name => 'args' ),
+        },
+    native => sub {
+        my $args = shift;
+        my $eval = shift;
+        die "Invalid 'args' $args->{args}" unless ref($args->{args}) eq 'Lorzy::EvaluatorResult::RunTime';
+        my $nodes = ${$args->{args}};
+
+        $args->{code}->( map { $eval->evaluated_result($_) }@$nodes );
     },
 );
 

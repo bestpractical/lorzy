@@ -22,7 +22,7 @@ my $script = $builder->defun(
                                                           { name => 'Native.Invoke', args => 
                                                             { obj => { name => 'Symbol', args => { symbol => 'something' } },
                                                               method => 'hello',
-                                                              args => { name => 'List', nodes => [ 'orz' ] },
+                                                              args => { name => 'List', args => { nodes => [ 'orz' ] } },
                                                                                      } },
                          ],
                                                } } ],
@@ -43,7 +43,7 @@ my $script2 = $builder->defun(
                                                 nodes => [
                                                           { name => 'Native.Apply', args => 
                                                             { code => { name => 'Symbol', args => { symbol => 'code' } },
-                                                              args => { name => 'List', nodes => [ 'orz' ] },
+                                                              args => { name => 'List', args => { nodes => [ 'orz', 'orz2' ] } },
                                                                                      } },
                          ],
                                                } } ],
@@ -61,7 +61,7 @@ lives_ok {
     $ret = $eval->apply_script( $script2, { 'code' => $code } );
 };
 ok($called);
-is($ret, 'roundtrip: orz');
+is($ret, 'roundtrip: orz,orz2');
 
 package TestClass;
 
