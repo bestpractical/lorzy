@@ -38,3 +38,7 @@ $eval->set_global_symbol( b=> $defined_b);
 $eval->run( $builder->build_expression( { name => 'b', args => { y => 'Y123' }}));
 ok (!$eval->result->success);
 like($eval->result->error,qr/Could not find symbol y in the current lexical context/);
+
+diag $eval->result->error->stack_as_string;
+
+

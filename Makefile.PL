@@ -9,7 +9,7 @@ requires 'MooseX::ClassAttribute';
 
 requires 'Module::Pluggable';
 requires 'Params::Validate';
-
+requires 'Exception::Class';
 build_requires 'Test::More';
 build_requires 'Test::Exception';
 

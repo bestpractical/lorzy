@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 13;
 
 use_ok('Lorzy::Lambda');
 use_ok('Lorzy::Lambda::Native');
@@ -69,3 +69,10 @@ my $match_orz = Lorzy::Expression->new(
 $eval6->run($match_orz);
 
 ok( !$eval6->result->success, "yay! it failed when we gave it a wrong argument name". $eval6->result->error );
+
+isa_ok($eval6->result->error, "Lorzy::Exception::Params");
+is_deeply($eval6->result->error->unwanted,
+          [ 'wrong-param-name' ]);
+
+is_deeply($eval6->result->error->missing,
+          [ 'regex' ]);

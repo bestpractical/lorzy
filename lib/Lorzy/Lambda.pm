@@ -1,5 +1,6 @@
 package Lorzy::Lambda;
 use Moose;
+use Lorzy::Exception;
 
 with 'Lorzy::Block';
 
@@ -15,6 +16,11 @@ has signature => (
     default => sub { {} },
     isa     => 'HashRef[Lorzy::FunctionArgument]',
 );
+
+sub name {
+    my $self = shift;
+    return 'Lorzy Code #'.$self->block_id;
+}
 
 sub check_args {
     my $self = shift;
@@ -41,21 +47,21 @@ sub check_args {
 }
 
 sub validate_args_or_die {
-    my $self = shift;
-    my $args = shift;
+    my ($self, $evaluator, $args) = @_;
     my ($missing, $unwanted) = $self->check_args($args);
 
     if (keys %$missing || keys %$unwanted) {
-        die "Function signature mismatch \n"
-          . (keys %$missing  ? "The following arguments were missing: " . join(", ", keys %$missing) ."\n" : '')
-          . (keys %$unwanted ? "The following arguments were unwanted: " . join(", ", keys %$unwanted)."\n" : '');
+        $evaluator->throw_exception( 'Lorzy::Exception::Params' => "function signature mismatch",
+                                     missing => [ keys %$missing ],
+                                     unwanted => [ keys %$unwanted ],
+                                     );
     }
 }
 
 sub apply {
     my ($self, $evaluator, $args) = @_;
 
-    $self->validate_args_or_die($args);
+    $self->validate_args_or_die($evaluator, $args);
 
     $evaluator->enter_stack_frame(args => $args, block => $self);
     my $res = $self->progn->evaluate($evaluator);

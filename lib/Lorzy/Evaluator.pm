@@ -5,6 +5,8 @@ use MooseX::AttributeHelpers;
 use Lorzy::EvaluatorResult;
 use Lorzy::Expression;
 use Lorzy::Lambda::Native;
+use Lorzy::Exception;
+
 use Params::Validate qw/validate validate_pos HASHREF/;
 use UNIVERSAL::require;
 
@@ -76,14 +78,19 @@ sub run {
         $self->result->success(1);
     };
 
-    if ( my $err = $@ ) {
-        #        die $err; # for now
-
+    if (my $err = Lorzy::Exception->caught()) {
         $self->result->success(0);
         $self->result->value(undef);
         $self->result->error($err);
     }
     return $self->result->success;
+}
+
+sub throw_exception {
+    my ($self, $exception, $msg, %args) = @_;
+    $exception->throw( error => $msg,
+                       stack => $self->stack_block,
+                       %args );
 }
 
 sub lookup_lex_name {
@@ -109,7 +116,7 @@ sub resolve_symbol_name {
     my ($self, $name) = @_;
     Carp::cluck("resolve_symbol_name was called with a reference $name.") if ref $name;
     $self->lookup_lex_name($name) || $self->get_global_symbol($name)
-        || die "Could not find symbol $name in the current lexical context.";
+        || $self->throw_exception( 'Lorzy::Exception' => "Could not find symbol $name in the current lexical context.");
 }
 
 sub apply_script {
@@ -122,6 +129,7 @@ sub apply_script {
     );
 
     my $ret = $lambda->apply($self => $args);
+
     $self->result->value($ret);
     $self->result->success(1);
     return $self->result->value;
