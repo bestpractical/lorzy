@@ -10,6 +10,7 @@ requires 'MooseX::ClassAttribute';
 requires 'Module::Pluggable';
 requires 'Params::Validate';
 requires 'Exception::Class';
+requires 'UNIVERSAL::require';
 build_requires 'Test::More';
 build_requires 'Test::Exception';
 
