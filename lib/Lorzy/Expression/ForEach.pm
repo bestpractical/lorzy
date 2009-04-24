@@ -34,7 +34,18 @@ sub evaluate {
     my $nodes = $$list;
 
     foreach (@$nodes) {
-        $lambda->apply($evaluator, { $binding => $_ });
+        eval {
+            $lambda->apply($evaluator, { $binding => $_ });
+        };
+        my $e;
+        if ($e = Lorzy::Exception::Loop->caught()) {
+            last if $e->instruction eq 'break';
+            next if $e->instruction eq 'continue';
+            $evaluator->throw_exception( 'Lorzy::Exception' => 'Unknown loop instruction: '.$e->instruction );
+        }
+        elsif ($e = Lorzy::Exception->caught()) {
+            ref $e ? $e->rethrow : die $e;
+        }
     }
 }
 

@@ -4,6 +4,9 @@ use Exception::Class
       { fields => ['details', 'stack'] },
       'Lorzy::Exception::Native' =>
       { isa => 'Lorzy::Exception'},
+      'Lorzy::Exception::Loop' =>
+      { isa => 'Lorzy::Exception',
+        fields => ['instruction'] },
       'Lorzy::Exception::Params' =>
       { isa => 'Lorzy::Exception',
         fields => ['missing', 'unwanted'] },
